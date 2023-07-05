@@ -9,46 +9,24 @@ on:
     - cron: "* * * * *"
 
 jobs:
-  check-links:
-    runs-on: ${{ fromJSON('["ubuntu-latest", "self-hosted"]')[github.repository == 'github/docs-internal'] }}
+  commentOnInactiveIssues:
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Setup node
-        uses: actions/setup-node@v3
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          node-version: 16.13.x
-          cache: npm
+          python-version: '3.x'
 
-      - name: Install
-        run: npm ci
+      - name: Install dependencies
+        run: pip install PyGithub
 
-      # Creates file "$/files.json", among others
-      - name: Gather files changed
-        uses: trilom/file-changes-action@a6ca26c14274c33b15e6499323aac178af06ad4b
-        with:
-          fileOutput: 'json'
+      - name: Comment on inactive issues
+        run: automate_comment.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
 
-      # For verification
-      - name: Show files changed
-        run: cat $HOME/files.json
-
-      - name: Link check (warnings, changed files)
-        run: |
-          ./script/rendered-content-link-checker.mjs \
-            --language en \
-            --max 100 \
-            --check-anchors \
-            --check-images \
-            --verbose \
-            --list $HOME/files.json
-
-      - name: Link check (critical, all files)
-        run: |
-          ./script/rendered-content-link-checker.mjs \
-            --language en \
-            --exit \
-            --verbose \
-            --check-images \
-            --level critical
