@@ -21,7 +21,6 @@ jobs:
 
       - name: Comment on inactive issues
         run: python scripts/automate_comment.py ${{ secrets.GITHUB_TOKEN }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        
       
 
