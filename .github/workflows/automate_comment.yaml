@@ -24,7 +24,7 @@ jobs:
         run: pip install PyGithub
 
       - name: Comment on inactive issues
-        run: python scripts/automate_comment.py ${{ secrets.TOKEN }}
+        run: python scripts/automate_comment.py 
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
        
