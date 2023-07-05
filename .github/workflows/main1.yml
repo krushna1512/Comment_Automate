@@ -5,8 +5,7 @@ name: 'automate comment'
 # **Who does it impact**: Docs content.
 
 on:
-  schedule:
-    - cron: "* * * * *"
+ workflow_dispatch:
 
 jobs:
   commentOnInactiveIssues:
