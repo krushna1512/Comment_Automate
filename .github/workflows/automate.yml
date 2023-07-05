@@ -2,7 +2,7 @@ name: Comment on Inactive Issues
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "* * * * *"
 
 jobs:
   commentOnInactiveIssues:
