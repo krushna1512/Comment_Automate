@@ -2,7 +2,7 @@ name: 'automate comment'
 
 on:
   schedule:
-   - cron: '*/5 * * * *'
+   - cron: '*/6 * * * *'
 
 jobs:
   commentOnInactiveIssues:
