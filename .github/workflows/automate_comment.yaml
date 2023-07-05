@@ -23,5 +23,5 @@ jobs:
         run: python scripts/automate_comment.py ${{ secrets.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
+      
 
