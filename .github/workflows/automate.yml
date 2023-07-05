@@ -23,7 +23,7 @@ jobs:
           pip install PyGithub
 
       - name: Comment on inactive issues
-        run: python comment-on-inactive-issues.py
+        run: automate_comment.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
