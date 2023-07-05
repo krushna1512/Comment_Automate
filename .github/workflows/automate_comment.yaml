@@ -1,8 +1,11 @@
 name: 'automate comment'
 
+# on:
+#   schedule:
+#    - cron: '*/6 * * * *'
+
 on:
-  schedule:
-   - cron: '*/6 * * * *'
+  workflow_dispatch:
 
 jobs:
   commentOnInactiveIssues:
@@ -21,8 +24,7 @@ jobs:
         run: pip install PyGithub
 
       - name: Comment on inactive issues
-        run: python scripts/automate_comment.py ${{ secrets.GITHUB_TOKEN }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }} 
+        run: python scripts/automate_comment.py ${{ secrets.TOKEN }}
+       
       
 
