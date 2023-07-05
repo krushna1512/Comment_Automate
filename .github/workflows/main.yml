@@ -1,4 +1,4 @@
-name: Comment on Inactive Issues
+name: 'Comment on Inactive Issues'
 on:
   schedule:
     - cron: "0 0 * * *"
