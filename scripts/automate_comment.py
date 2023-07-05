@@ -3,7 +3,7 @@ import os
 from github import Github
 
 def comment_on_inactive_issues():
-    
+    repository = os.environ.get('GITHUB_REPOSITORY')
     owner, repo = repository.split('/')
 
     g = Github(github_token)
