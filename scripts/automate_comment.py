@@ -9,7 +9,7 @@ def comment_on_inactive_issues():
 
     g = Github(github_token)
     repo = g.get_repo(repository)
-    issues = repo.get_issues(state='open')
+    issues = repo.get_issues(state=['open', 'inprocess'])
 
     current_date = datetime.now() - timedelta(minutes=4)
 
