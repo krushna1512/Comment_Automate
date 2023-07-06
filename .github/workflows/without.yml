@@ -1,4 +1,4 @@
-name: 'without'
+name: 'Without'
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const octokit = github.getOctokit(context.token);
+            const octokit = context.octokit;
             const repo = context.repo.repo;
             const owner = context.repo.owner;
             const currentDateTimeMinusFourDays = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
