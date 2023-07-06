@@ -1,4 +1,4 @@
-name: 'without'
+name: 'Without'
 
 on:
   workflow_dispatch:
@@ -13,26 +13,31 @@ jobs:
         with:
           script: |
             const creator = context.payload.sender.login;
+            const repo = context.repo.repo;
+            const owner = context.repo.owner;
+            const currentDateTimeMinusFourDays = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
+            
             const issues = await github.paginate(github.rest.issues.listForRepo({
-              ...context.repo,
+              owner: owner,
+              repo: repo,
               state: 'open'
             }));
 
-            const currentDateTimeMinusFourDays = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
-
             for (const issue of issues) {
               const comments = await github.rest.issues.listComments({
-                ...context.repo,
+                owner: owner,
+                repo: repo,
                 issue_number: issue.number
               });
 
               const lastComment = comments.data[comments.data.length - 1];
 
               if (!lastComment || lastComment.created_at < currentDateTimeMinusFourDays) {
-                const comment = `Hello @${context.repo.owner}! It seems no activity has been recorded on this issue for the past 4 days. Is there anything I can assist you with?`;
+                const comment = `Hello @${owner}! It seems no activity has been recorded on this issue for the past 4 days. Is there anything I can assist you with?`;
 
                 await github.rest.issues.createComment({
-                  ...context.repo,
+                  owner: owner,
+                  repo: repo,
                   issue_number: issue.number,
                   body: comment
                 });
