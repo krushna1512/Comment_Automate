@@ -20,6 +20,8 @@ jobs:
         run: npm install @actions/github
       
       - name: Comment on inactive issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         run: |
           node -e '
           const github = require("@actions/github");
@@ -71,8 +73,3 @@ jobs:
           
           commentOnInactiveIssues();
           '
-              }
-            }
-          }
-          
-          commentOnInactiveIssues();
