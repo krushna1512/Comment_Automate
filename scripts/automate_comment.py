@@ -37,7 +37,7 @@ def comment_on_inactive_issues():
         # Check if the last comment is missing or older than 4 minutes
         if not last_comment or last_comment.created_at < current_date:
             # Create a comment mentioning the owner
-            comment = "Hello @{owner}! It seems no activity has been recorded on this issue for the past 4 days. Is there anything I can assist you with?".format(owner=owner)
+            comment = " Hey @{owner}, This issue is not updated since 4 days, can you please give us some update here ?".format(owner=owner)
             
             # Post the comment on the issue
             issue.create_comment(comment)
