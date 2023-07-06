@@ -1,38 +1,30 @@
-name: 'Without'
-
-on:
-  workflow_dispatch:
+on: pull_request_target
 
 jobs:
-  commentOnInactiveIssues:
+  welcome:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Set up GitHub Script
+      - name: Check for inactive issues
         uses: actions/github-script@v6
+        with:
+          script: |
+            const creator = context.payload.sender.login;
+            const fourDaysAgo = new Date();
+            fourDaysAgo.setDate(fourDaysAgo.getDate() - 4);
 
-      - name: Comment on inactive issues
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-        run: |
-          const currentDateTime = new Date().toISOString();
-          const currentDateTimeMinusFourDays = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
+            const issues = await github.paginate(
+              github.rest.issues.listForRepo,
+              { ...context.repo, state: 'open' }
+            );
 
-          github.issues.listComments({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: context.issue.number
-          }).then(({ data: comments }) => {
-            const lastComment = comments[comments.length - 1];
-
-            if (!lastComment || lastComment.created_at < currentDateTimeMinusFourDays) {
-              const comment = `Hello @${context.repo.owner}! It seems no activity has been recorded on this issue since ${currentDateTime}. Is there anything I can assist you with?`;
-
-              github.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: comment
-              });
+            for (const issue of issues) {
+              const lastActivityDate = new Date(issue.updated_at);
+              if (lastActivityDate < fourDaysAgo && issue.comments === 0) {
+                await github.rest.issues.createComment({
+                  issue_number: issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: `It seems there has been no activity on this issue for the past four days. If you still require assistance, please let us know.`
+                });
+              }
             }
-          });
