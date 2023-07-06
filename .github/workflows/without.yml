@@ -17,25 +17,31 @@ jobs:
             const owner = context.repo.owner;
             const currentDateTimeMinusFourDays = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
             
-            const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
+            const response = await octokit.request('GET /repos/{owner}/{repo}/issues', {
               owner: owner,
               repo: repo,
-              state: 'open'
+              state: 'open',
+              per_page: 100
             });
 
+            const issues = response.data;
+
             for (const issue of issues) {
-              const comments = await octokit.rest.issues.listComments({
+              const commentsResponse = await octokit.request('GET /repos/{owner}/{repo}/issues/{issue_number}/comments', {
                 owner: owner,
                 repo: repo,
-                issue_number: issue.number
+                issue_number: issue.number,
+                per_page: 100
               });
 
-              const lastComment = comments.data[comments.data.length - 1];
+              const comments = commentsResponse.data;
+
+              const lastComment = comments[comments.length - 1];
 
               if (!lastComment || lastComment.created_at < currentDateTimeMinusFourDays) {
                 const comment = `Hello @${owner}! It seems no activity has been recorded on this issue for the past 4 days. Is there anything I can assist you with?`;
 
-                await octokit.rest.issues.createComment({
+                await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
                   owner: owner,
                   repo: repo,
                   issue_number: issue.number,
