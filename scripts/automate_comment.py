@@ -21,7 +21,7 @@ def comment_on_inactive_issues():
             last_comment = comment
 
         if not last_comment or last_comment.created_at < current_date:
-            comment = "Hello! It seems no activity has been recorded on this issue for the past 4 days. Is there anything I can assist you with?"
+            comment = "Hello @{owner}! It seems no activity has been recorded on this issue for the past 4 days. Is there anything I can assist you with?".format(owner=owner)
             issue.create_comment(comment)
 
 comment_on_inactive_issues()
