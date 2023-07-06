@@ -1,4 +1,4 @@
-name: 'Single File'
+name: 'without'
 
 on:
   workflow_dispatch:
