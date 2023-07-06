@@ -1,4 +1,4 @@
-name: 'automate comment'
+name: 'old automate comment'
 
 on:
   workflow_dispatch:
