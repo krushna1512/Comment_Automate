@@ -1,4 +1,4 @@
-name: 'Without Nodejs or Python'
+name: 'Single File'
 
 on:
   workflow_dispatch:
@@ -38,3 +38,5 @@ jobs:
                 });
               }
             }
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
