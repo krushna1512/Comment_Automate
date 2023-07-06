@@ -9,17 +9,9 @@ def comment_on_inactive_issues():
 
     g = Github(github_token)
     repo = g.get_repo(repository)
+    issues = repo.get_issues(state='open')
 
-    # Retrieve issues with state='open'
-    open_issues = repo.get_issues(state='open')
-
-    # Retrieve issues with state='inprocess'
-    inprocess_issues = repo.get_issues(state='inprocess')
-
-    # Combine the issues into a single list
-    issues = list(open_issues) + list(inprocess_issues)
-
-    current_date = datetime.now() - timedelta(minutes=4)
+    current_date = datetime.now() - timedelta(minutes==4)
 
     for issue in issues:
         comments = issue.get_comments()
@@ -29,7 +21,7 @@ def comment_on_inactive_issues():
             last_comment = comment
 
         if not last_comment or last_comment.created_at < current_date:
-            comment = "Hello! It seems no activity has been recorded on this issue for the past 4 days."
+            comment = "Hello! It seems no activity has been recorded on this issue for the past 4 days. Is there anything I can assist you with?"
             issue.create_comment(comment)
 
 comment_on_inactive_issues()
