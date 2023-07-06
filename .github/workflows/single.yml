@@ -21,8 +21,9 @@ jobs:
       
       - name: Comment on inactive issues
         run: |
-          const github = require('@actions/github');
-          
+          node -e '
+          const github = require("@actions/github");
+
           async function commentOnInactiveIssues() {
             const context = github.context;
             const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
@@ -34,7 +35,7 @@ jobs:
             const { data: issues } = await octokit.rest.issues.listForRepo({
               owner: owner,
               repo: repo,
-              state: 'open'
+              state: "open"
             });
             
             for (const issue of issues) {
@@ -54,7 +55,7 @@ jobs:
                 });
                 
                 const assigneeLogins = assignees.map(assignee => assignee.login);
-                const assigneeMentions = assigneeLogins.map(login => `@${login}`).join(' ');
+                const assigneeMentions = assigneeLogins.map(login => `@${login}`).join(" ");
                 
                 const comment = `Hello${assigneeMentions}! It seems no activity has been recorded on this issue for the past 4 minutes. Is there anything I can assist you with?`;
                 
@@ -64,6 +65,12 @@ jobs:
                   issue_number: issue.number,
                   body: comment
                 });
+              }
+            }
+          }
+          
+          commentOnInactiveIssues();
+          '
               }
             }
           }
