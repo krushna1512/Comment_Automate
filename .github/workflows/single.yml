@@ -1,0 +1,71 @@
+name: Comment on Inactive Issues
+
+on:
+  workflow_dispatch:
+
+jobs:
+  comment_on_inactive_issues:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      
+      - name: Install dependencies
+        run: npm install @actions/github
+      
+      - name: Comment on inactive issues
+        run: |
+          const github = require('@actions/github');
+          
+          async function commentOnInactiveIssues() {
+            const context = github.context;
+            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+            const repo = context.repo.repo;
+            const owner = context.repo.owner;
+            const currentDateTime = new Date().toISOString();
+            const currentDateTimeMinusFourMinutes = new Date(Date.now() - 4 * 60 * 1000).toISOString();
+            
+            const { data: issues } = await octokit.rest.issues.listForRepo({
+              owner: owner,
+              repo: repo,
+              state: 'open'
+            });
+            
+            for (const issue of issues) {
+              const { data: comments } = await octokit.rest.issues.listComments({
+                owner: owner,
+                repo: repo,
+                issue_number: issue.number
+              });
+              
+              const lastComment = comments[comments.length - 1];
+              
+              if (!lastComment || lastComment.created_at < currentDateTimeMinusFourMinutes) {
+                const { data: assignees } = await octokit.rest.issues.listAssignees({
+                  owner: owner,
+                  repo: repo,
+                  issue_number: issue.number
+                });
+                
+                const assigneeLogins = assignees.map(assignee => assignee.login);
+                const assigneeMentions = assigneeLogins.map(login => `@${login}`).join(' ');
+                
+                const comment = `Hello${assigneeMentions}! It seems no activity has been recorded on this issue for the past 4 minutes. Is there anything I can assist you with?`;
+                
+                await octokit.rest.issues.createComment({
+                  owner: owner,
+                  repo: repo,
+                  issue_number: issue.number,
+                  body: comment
+                });
+              }
+            }
+          }
+          
+          commentOnInactiveIssues();
