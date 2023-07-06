@@ -1,4 +1,4 @@
-name: Comment on Inactive Issues
+name: 'Single File'
 
 on:
   workflow_dispatch:
