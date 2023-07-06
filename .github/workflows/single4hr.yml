@@ -65,7 +65,7 @@ jobs:
                 const assigneeMentions = assigneeLogins.map(login => `@${login}`).join(" ");
                 
                 // Create a comment notifying the assignees about the inactivity
-                const comment = `Hello${assigneeMentions}! It seems no activity has been recorded on this issue for the past 4 days. Is there anything I can assist you with?`;
+                const comment = `Hey ${assigneeMentions}, This issue is not updated since 4 days, can you please give us some update here ?`;
                 
                 await octokit.rest.issues.createComment({
                   owner: owner,
