@@ -8,25 +8,35 @@ on:
   workflow_dispatch:
 
 jobs:
-  commentOnInactiveIssues:
+  comment_on_inactive_issues:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: pip install PyGithub
-
+      
       - name: Comment on inactive issues
-        run: python scripts/automate_comment.py 
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-       
+        run: |
+          current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ" -d "-4 minutes")
+          repo=$(basename $GITHUB_REPOSITORY)
+          owner=$(dirname $GITHUB_REPOSITORY)
+          assignees=""
+          
+          for issue in $(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$GITHUB_REPOSITORY/issues?state=open" | jq -r '.[] | @base64'); do
+              issue_json=$(echo $issue | base64 -d)
+              last_comment=$(echo $issue_json | jq -r '.comments_url' | xargs -I {} curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" {} | jq -r '.[] | @base64' | tail -n 1)
+              last_comment_json=$(echo $last_comment | base64 -d)
+              last_comment_date=$(echo $last_comment_json | jq -r '.created_at')
+              
+              if [[ -z "$last_comment_date" || "$last_comment_date" < "$current_date" ]]; then
+                  assignees_json=$(echo $issue_json | jq -r '.assignees')
+                  assignees=$(echo $assignees_json | jq -r '.[].login' | xargs | sed 's/ / @/g')
+                  
+                  comment="Hello$assignees! It seems no activity has been recorded on this issue for the past 4 minutes. Is there anything I can assist you with?"
+                  issue_number=$(echo $issue_json | jq -r '.number')
+                  curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -d "{\"body\": \"$comment\"}" "https://api.github.com/repos/$owner/$repo/issues/$issue_number/comments"
+              fi
+          done
+
       
 
