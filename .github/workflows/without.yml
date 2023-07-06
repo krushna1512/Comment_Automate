@@ -1,30 +1,30 @@
-name: 'Without'
+name: 'without'
 
 on:
   workflow_dispatch:
 
 jobs:
-  comment_on_inactive_issues:
+  commentOnInactiveIssues:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Comment on inactive issues
         uses: actions/github-script@v6
         with:
           script: |
-            const creator = context.payload.sender.login;
+            const octokit = github.getOctokit(context.token);
             const repo = context.repo.repo;
             const owner = context.repo.owner;
             const currentDateTimeMinusFourDays = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
             
-            const issues = await github.paginate(github.rest.issues.listForRepo({
+            const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
               owner: owner,
               repo: repo,
               state: 'open'
-            }));
+            });
 
             for (const issue of issues) {
-              const comments = await github.rest.issues.listComments({
+              const comments = await octokit.rest.issues.listComments({
                 owner: owner,
                 repo: repo,
                 issue_number: issue.number
@@ -35,7 +35,7 @@ jobs:
               if (!lastComment || lastComment.created_at < currentDateTimeMinusFourDays) {
                 const comment = `Hello @${owner}! It seems no activity has been recorded on this issue for the past 4 days. Is there anything I can assist you with?`;
 
-                await github.rest.issues.createComment({
+                await octokit.rest.issues.createComment({
                   owner: owner,
                   repo: repo,
                   issue_number: issue.number,
