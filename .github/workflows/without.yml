@@ -1,4 +1,4 @@
-name: 'W'
+name: old automate comment
 
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
 
       - name: Add comment to inactive issues
         run: |
-          const issues = JSON.parse(process.env.ISSUES_DATA);
+          const issues = ${{ steps.get-issues.outputs.data }};
           const fourDaysAgo = new Date();
           fourDaysAgo.setDate(fourDaysAgo.getDate() - 4);
 
@@ -44,4 +44,3 @@ jobs:
           }
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          ISSUES_DATA: ${{ steps.get-issues.outputs.data }}
