@@ -11,7 +11,7 @@ def comment_on_inactive_issues():
     repo = g.get_repo(repository)
     issues = repo.get_issues(state='open')
 
-    current_date = datetime.now() - timedelta(minutes==4)
+    current_date = datetime.now() - timedelta(minutes=4)
 
     for issue in issues:
         comments = issue.get_comments()
