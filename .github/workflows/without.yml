@@ -8,42 +8,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Comment on inactive issues
+      - name: Set up GitHub Script
         uses: actions/github-script@v6
-        with:
-          script: |
-            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-            const repo = context.repo.repo;
-            const owner = context.repo.owner;
-            const currentDateTimeMinusFourDays = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
-            
-            const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
-              owner: owner,
-              repo: repo,
-              state: 'open',
-              per_page: 100
-            });
 
-            for (const issue of issues) {
-              const comments = await octokit.paginate(octokit.rest.issues.listComments, {
-                owner: owner,
-                repo: repo,
-                issue_number: issue.number,
-                per_page: 100
-              });
-
-              const lastComment = comments[comments.length - 1];
-
-              if (!lastComment || lastComment.created_at < currentDateTimeMinusFourDays) {
-                const comment = `Hello @${owner}! It seems no activity has been recorded on this issue for the past 4 days. Is there anything I can assist you with?`;
-
-                await octokit.rest.issues.createComment({
-                  owner: owner,
-                  repo: repo,
-                  issue_number: issue.number,
-                  body: comment
-                });
-              }
-            }
+      - name: Comment on inactive issues
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          const currentDateTime = new Date().toISOString();
+          const currentDateTimeMinusFourDays = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
+
+          github.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number
+          }).then(({ data: comments }) => {
+            const lastComment = comments[comments.length - 1];
+
+            if (!lastComment || lastComment.created_at < currentDateTimeMinusFourDays) {
+              const comment = `Hello @${context.repo.owner}! It seems no activity has been recorded on this issue since ${currentDateTime}. Is there anything I can assist you with?`;
+
+              github.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
+          });
