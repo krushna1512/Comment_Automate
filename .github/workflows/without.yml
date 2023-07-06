@@ -19,10 +19,10 @@ jobs:
 
       - name: Add comment to inactive issues
         run: |
-          const issues = JSON.parse('${{ steps.get-issues.outputs.data }}');
+          const issues = JSON.parse(process.env.ISSUES_DATA);
           const fourDaysAgo = new Date();
           fourDaysAgo.setDate(fourDaysAgo.getDate() - 4);
-          
+
           for (const issue of issues) {
             const lastActivityDate = new Date(issue.updated_at);
             if (lastActivityDate < fourDaysAgo && issue.comments === 0) {
@@ -44,3 +44,4 @@ jobs:
           }
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          ISSUES_DATA: ${{ steps.get-issues.outputs.data }}
