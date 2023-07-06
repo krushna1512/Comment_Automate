@@ -1,4 +1,4 @@
-name: 'Single File'
+name: 'Single File 4hr'
 
 on:
   workflow_dispatch:
