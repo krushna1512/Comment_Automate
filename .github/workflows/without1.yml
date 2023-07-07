@@ -17,60 +17,56 @@ jobs:
           node-version: '14'
 
       - name: Comment on inactive issues
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.TOKEN }}
-          script: |
-            const { context, getOctokit } = require('@actions/github');
+        run: |
+          const { getOctokit } = require('@actions/github');
 
-            async function commentOnInactiveIssues() {
-              const octokit = getOctokit(process.env.GITHUB_TOKEN);
-              const repo = context.repo.repo;
-              const owner = context.repo.owner;
-              const currentDateTime = new Date().toISOString();
-              const currentDateTimeMinusFourDays = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
+          async function commentOnInactiveIssues() {
+            const octokit = getOctokit(process.env.GITHUB_TOKEN);
+            const { owner, repo } = octokit.context.repo;
+            const currentDateTime = new Date().toISOString();
+            const currentDateTimeMinusFourDays = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
 
-              // Retrieve the list of open issues for the repository
-              const { data: issues } = await octokit.rest.issues.listForRepo({
+            // Retrieve the list of open issues for the repository
+            const { data: issues } = await octokit.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open'
+            });
+
+            // Iterate over each issue and check for inactivity
+            for (const issue of issues) {
+              // Retrieve the list of comments for the issue
+              const { data: comments } = await octokit.rest.issues.listComments({
                 owner,
                 repo,
-                state: 'open'
+                issue_number: issue.number
               });
 
-              // Iterate over each issue and check for inactivity
-              for (const issue of issues) {
-                // Retrieve the list of comments for the issue
-                const { data: comments } = await octokit.rest.issues.listComments({
+              const lastComment = comments[comments.length - 1];
+
+              // Check if the last comment is older than 4 days or if no comments exist
+              if (!lastComment || lastComment.created_at < currentDateTimeMinusFourDays) {
+                // Retrieve the list of assignees for the issue
+                const { data: assignees } = await octokit.rest.issues.listAssignees({
                   owner,
                   repo,
                   issue_number: issue.number
                 });
 
-                const lastComment = comments[comments.length - 1];
+                const assigneeLogins = assignees.map(assignee => assignee.login);
+                const assigneeMentions = assigneeLogins.map(login => `@${login}`).join(' ');
 
-                // Check if the last comment is older than 4 days or if no comments exist
-                if (!lastComment || lastComment.created_at < currentDateTimeMinusFourDays) {
-                  // Retrieve the list of assignees for the issue
-                  const { data: assignees } = await octokit.rest.issues.listAssignees({
-                    owner,
-                    repo,
-                    issue_number: issue.number
-                  });
+                // Create a comment notifying the assignees about the inactivity
+                const comment = `Hey ${assigneeMentions}, This issue is not updated since 4 days, can you please give us some update here ?`;
 
-                  const assigneeLogins = assignees.map(assignee => assignee.login);
-                  const assigneeMentions = assigneeLogins.map(login => `@${login}`).join(' ');
-
-                  // Create a comment notifying the assignees about the inactivity
-                  const comment = `Hey ${assigneeMentions}, This issue is not updated since 4 days, can you please give us some update here ?`;
-
-                  await octokit.rest.issues.createComment({
-                    owner,
-                    repo,
-                    issue_number: issue.number,
-                    body: comment
-                  });
-                }
+                await octokit.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  body: comment
+                });
               }
             }
+          }
 
-            commentOnInactiveIssues();
+          commentOnInactiveIssues();
