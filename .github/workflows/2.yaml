@@ -29,7 +29,7 @@ jobs:
 
               // Calculate the time difference in milliseconds
               const timeDifference = currentDate - issueLastUpdated;
-              const fourDaysInMilliseconds = 4 * 24 * 60 * 60 * 1000; // 4 days
+              const fourDaysInMilliseconds = 1 * 24 * 60 * 60 * 1000; // 4 days
 
               if (timeDifference >= fourDaysInMilliseconds && issue.state === 'open') {
                 console.log('Issue ' + issue.number + ' needs an update');
