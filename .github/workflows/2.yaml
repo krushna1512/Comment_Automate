@@ -15,27 +15,40 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
+            // Get the username of the user who triggered the workflow
             const creator = context.payload.sender.login;
+            
+            // Define options for listing issues
             const opts = github.rest.issues.listForRepo.endpoint.merge({
               owner: context.repo.owner,
               repo: context.repo.repo,
               creator,
               state: 'open'
             });
+            
+            // Retrieve all open issues for the repository
             const issues = await github.paginate(opts);
 
+            // Loop through each issue
             for (let i = 0; i < issues.length; i++) {
               const issue = issues[i];
+              
+              // Get the last updated timestamp of the issue and the current timestamp
               const issueLastUpdated = new Date(issue.updated_at);
               const currentDate = new Date();
 
-              // Calculate the time difference in milliseconds
+              // Calculate the time difference in milliseconds between the last update and the current time
               const timeDifference = currentDate - issueLastUpdated;
               const fourDaysInMilliseconds = 4 * 24 * 60 * 60 * 1000; // 4 days
 
+              // Check if the issue hasn't been updated in the last 4 days
               if (timeDifference >= fourDaysInMilliseconds) {
                 console.log('Issue ' + issue.number + ' needs an update');
+                
+                // Create a comment text to be posted on the issue
                 const commentText = `Hey @${issue.user.login}, This issue is not updated since 4 days, can you please give us some update here ?`;
+                
+                // Post a comment on the issue
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
