@@ -14,12 +14,13 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const octokit = github.getOctokit(github.token);
-            const { data: issues } = await octokit.issues.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              per_page: 100
+            const creator = context.payload.sender.login;
+            const opts = github.rest.issues.listForRepo.endpoint.merge({
+              ...context.issue,
+              creator,
+              state: 'all'
             });
+            const issues = await github.paginate(opts);
 
             issues.forEach((issue) => {
               console.log(issue.title);
