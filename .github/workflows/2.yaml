@@ -1,9 +1,11 @@
 name: Automate Comments
 
+# on:
+#   schedule:
+#     - cron: "30 2 * * *"
 on:
-  schedule:
-    - cron: "30 2 * * *"
-
+  workflow_dispatch
+  
 jobs:
   list-issues:
     runs-on: ubuntu-latest
