@@ -1,0 +1,42 @@
+name: List out the issues
+
+on:
+  workflow_dispatch
+
+jobs:
+  list-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: List issues
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const creator = context.payload.sender.login;
+            const opts = github.rest.issues.listForRepo.endpoint.merge({
+              ...context.issue,
+              creator,
+              state: 'open'
+            });
+            const issues = await github.paginate(opts);
+
+            const tenMinutesAgo = new Date();
+            tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10);
+
+            for (const issue of issues) {
+              const comments = await github.rest.issues.listComments({
+                ...context.issue,
+                per_page: 100
+              });
+
+              const lastComment = comments.data[comments.data.length - 1];
+
+              if (!lastComment || new Date(lastComment.created_at) < tenMinutesAgo) {
+                await github.rest.issues.createComment({
+                  ...context.issue,
+                  body: 'Issue is inactive'
+                });
+              }
+            }
