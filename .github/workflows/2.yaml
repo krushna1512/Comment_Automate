@@ -1,4 +1,4 @@
-name: List out and update issues
+name: Automate Comments
 
 on:
   schedule:
