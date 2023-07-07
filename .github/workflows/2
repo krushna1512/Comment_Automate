@@ -1,0 +1,25 @@
+name: List out the issues
+
+on:
+  workflow_dispatch
+
+jobs:
+  list-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: List issues
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: issues } = await github.issues.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+
+            issues.forEach((issue) => {
+              console.log(issue.title);
+            });
