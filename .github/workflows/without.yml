@@ -34,9 +34,9 @@ jobs:
                   body: "It seems there has been no activity on this issue for the past four days. If you still require assistance, please let us know."
                 };
 
-                const octokit = require('@octokit/rest')();
+                const octokit = require("@octokit/rest")();
                 octokit.authenticate({
-                  type: 'token',
+                  type: "token",
                   token: process.env.GITHUB_TOKEN
                 });
 
