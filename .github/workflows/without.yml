@@ -16,11 +16,10 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const octokit = context.github;
-            const { owner, repo } = context.repo;
 
-            octokit.issues.listForRepo({
-              owner,
-              repo,
+            octokit.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               state: 'open'
             }).then(({ data: issues }) => {
               const fourDaysAgo = new Date();
@@ -31,12 +30,12 @@ jobs:
                 if (lastActivityDate < fourDaysAgo && issue.comments === 0) {
                   const commentBody = {
                     issue_number: issue.number,
-                    owner,
-                    repo,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
                     body: "It seems there has been no activity on this issue for the past four days. If you still require assistance, please let us know."
                   };
 
-                  await octokit.issues.createComment(commentBody);
+                  await octokit.rest.issues.createComment(commentBody);
                 }
               });
             });
