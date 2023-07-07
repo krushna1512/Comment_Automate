@@ -6,6 +6,8 @@ on:
 jobs:
   list-issues:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -35,7 +37,9 @@ jobs:
 
               if (!lastComment || new Date(lastComment.created_at) < tenMinutesAgo) {
                 await github.rest.issues.createComment({
-                  ...context.issue,
+                  issue_number: issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
                   body: 'Issue is inactive'
                 });
               }
