@@ -10,25 +10,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: List issues
+      - name: List issues and add comments
         uses: actions/github-script@v6
         with:
           script: |
             const creator = context.payload.sender.login;
-            const opts = github.rest.issues.listForRepo.endpoint.merge({
-              ...context.issue,
+            const opts = {
+              ...context.repo,
               creator,
               state: 'open'
-            });
-            const issues = await github.paginate(opts);
+            };
+
+            const issues = await github.issues.listForRepo(opts);
 
             const tenMinutesAgo = new Date();
             tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10);
 
-            for (const issue of issues) {
-              const comments = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
+            for (const issue of issues.data) {
+              const comments = await github.issues.listComments({
+                ...context.repo,
                 issue_number: issue.number,
                 per_page: 100
               });
@@ -36,9 +36,8 @@ jobs:
               const lastComment = comments.data[comments.data.length - 1];
 
               if (!lastComment || new Date(lastComment.created_at) < tenMinutesAgo) {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
+                await github.issues.createComment({
+                  ...context.repo,
                   issue_number: issue.number,
                   body: 'Issue is inactive'
                 });
