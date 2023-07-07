@@ -1,4 +1,4 @@
-name: List out the issues
+name: 'List out the issues'
 
 on:
   workflow_dispatch
