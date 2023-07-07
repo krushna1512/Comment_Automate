@@ -30,11 +30,11 @@ jobs:
 
               // Calculate the time difference in milliseconds
               const timeDifference = currentDate - issueLastUpdated;
-              const oneHourInMilliseconds = 60 * 60 * 1000; // 1 hour
+              const twoMinutesInMilliseconds = 2 * 60 * 1000; // 2 minutes
 
-              if (timeDifference >= oneHourInMilliseconds) {
+              if (timeDifference >= twoMinutesInMilliseconds) {
                 console.log('Issue ' + issue.number + ' needs an update');
-                const commentText = 'Hey';
+                const commentText = `Hey @${issue.user.login}, this is a test comment.`;
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
