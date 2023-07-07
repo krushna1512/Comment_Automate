@@ -34,7 +34,7 @@ jobs:
 
               if (timeDifference >= twoMinutesInMilliseconds) {
                 console.log('Issue ' + issue.number + ' needs an update');
-                const commentText = `Hey @${issue.user.login}, this is a test comment.`;
+                const commentText = `Hey @${issue.user.login}, This issue is not updated since 4 days, can you please give us some update here ?`;
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
