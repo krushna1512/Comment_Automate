@@ -1,4 +1,4 @@
-name: List out the issues
+name: List out and update issues
 
 on:
   workflow_dispatch
@@ -10,7 +10,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: List issues
+      - name: List and update issues
         uses: actions/github-script@v6
         with:
           script: |
@@ -18,10 +18,34 @@ jobs:
             const opts = github.rest.issues.listForRepo.endpoint.merge({
               ...context.issue,
               creator,
-              state: 'all'
+              state: 'open'
             });
             const issues = await github.paginate(opts);
 
-            issues.forEach((issue) => {
-              console.log(issue.title);
-            });
+            for (const issue of issues) {
+              const comments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                per_page: 100
+              });
+
+              const lastComment = comments.data.pop();
+              const lastCommentDate = new Date(lastComment.created_at);
+              const currentDate = new Date();
+
+              // Calculate the time difference in milliseconds
+              const timeDifference = currentDate - lastCommentDate;
+              const oneDayInMilliseconds = 24 * 60 * 60 * 1000; // 1 day
+
+              if (timeDifference >= oneDayInMilliseconds) {
+                console.log(`Issue ${issue.number} needs an update`);
+                const commentText = "Please give some update.";
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: commentText
+                });
+              }
+            }
