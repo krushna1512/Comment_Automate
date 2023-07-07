@@ -1,4 +1,4 @@
-name: 'List out the issues'
+name: List out the issues
 
 on:
   workflow_dispatch
@@ -14,7 +14,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { data: issues } = await github.issues.list({
+            const octokit = github.getOctokit(github.token);
+            const { data: issues } = await octokit.issues.list({
               owner: context.repo.owner,
               repo: context.repo.repo,
               per_page: 100
