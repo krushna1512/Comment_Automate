@@ -37,7 +37,7 @@ jobs:
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: issue.number,
-                  body: 'Hey, this is a test comment.';
+                  body: 'Hey, this is a test comment.'
                 });
               }
             }
