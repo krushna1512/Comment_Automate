@@ -6,6 +6,8 @@ on:
 jobs:
   list-issues:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
