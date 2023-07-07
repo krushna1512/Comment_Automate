@@ -34,10 +34,10 @@ jobs:
               if (timeDifference >= fourDaysInMilliseconds && issue.state === 'open') {
                 console.log('Issue ' + issue.number + ' needs an update');
                 await github.rest.issues.createComment({
+                  issue_number: context.issue.number,
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  issue_number: issue.number,
-                  body: 'Hey, this is a test comment.'
+                  body: 'Hey'
                 });
               }
             }
