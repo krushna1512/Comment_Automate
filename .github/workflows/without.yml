@@ -1,4 +1,4 @@
-name: 'old automate comment'
+name: 'without'
 
 on:
   workflow_dispatch:
