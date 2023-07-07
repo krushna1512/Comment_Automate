@@ -1,7 +1,8 @@
 name: List out and update issues
 
 on:
-  workflow_dispatch
+  schedule:
+    - cron: " 30 2 * * * "
 
 jobs:
   list-issues:
@@ -30,9 +31,9 @@ jobs:
 
               // Calculate the time difference in milliseconds
               const timeDifference = currentDate - issueLastUpdated;
-              const twoMinutesInMilliseconds = 2 * 60 * 1000; // 2 minutes
+              const fourDaysInMilliseconds = 4 * 24 * 60 * 60 * 1000; // 4 days
 
-              if (timeDifference >= twoMinutesInMilliseconds) {
+              if (timeDifference >= fourDaysInMilliseconds) {
                 console.log('Issue ' + issue.number + ' needs an update');
                 const commentText = `Hey @${issue.user.login}, This issue is not updated since 4 days, can you please give us some update here ?`;
                 await github.rest.issues.createComment({
