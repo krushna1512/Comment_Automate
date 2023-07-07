@@ -12,28 +12,47 @@ jobs:
 
       - name: Get issues
         id: get-issues
-        run: echo "::set-output name=data::$(curl -s -H \"Authorization: Bearer ${{ secrets.TOKEN }}\" \
+        run: |
+          echo "::set-output name=data::$(curl -s -H \"Authorization: Bearer ${{ secrets.TOKEN }}\" \
           -H \"Accept: application/vnd.github.v3+json\" \
           https://api.github.com/repos/${{ github.repository }}/issues?state=open)"
 
+      - name: Debug output
+        run: |
+          echo "Received data: ${{ steps.get-issues.outputs.data }}"
+
       - name: Add comment to inactive issues
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const issues = JSON.parse(${{ steps.get-issues.outputs.data }});
+        run: |
+          node -e '
+            const issues = JSON.parse(process.env.ISSUES);
             const fourDaysAgo = new Date();
             fourDaysAgo.setDate(fourDaysAgo.getDate() - 4);
+
+            console.log("Number of issues: " + issues.length);
 
             for (const issue of issues) {
               const lastActivityDate = new Date(issue.updated_at);
               if (lastActivityDate < fourDaysAgo && issue.comments === 0) {
                 const body = {
                   issue_number: issue.number,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
+                  owner: process.env.REPO_OWNER,
+                  repo: process.env.REPO_NAME,
                   body: "It seems there has been no activity on this issue for the past four days. If you still require assistance, please let us know."
                 };
 
-                github.issues.createComment(body);
+                const octokit = require("@octokit/rest")();
+                octokit.authenticate({
+                  type: "token",
+                  token: process.env.GITHUB_TOKEN
+                });
+
+                octokit.issues.createComment(body);
               }
             }
+          '
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          ISSUES: ${{ steps.get-issues.outputs.data }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.repository }}
+        shell: bash
