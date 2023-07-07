@@ -1,4 +1,4 @@
-name: List out and update issues
+name: List out the issues
 
 on:
   workflow_dispatch
@@ -6,13 +6,11 @@ on:
 jobs:
   list-issues:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: List and update issues
+      - name: List issues
         uses: actions/github-script@v6
         with:
           script: |
@@ -24,23 +22,6 @@ jobs:
             });
             const issues = await github.paginate(opts);
 
-            for (let i = 0; i < issues.length; i++) {
-              const issue = issues[i];
-              const issueLastUpdated = new Date(issue.updated_at);
-              const currentDate = new Date();
-
-              // Calculate the time difference in milliseconds
-              const timeDifference = currentDate - issueLastUpdated;
-              const oneDayInMilliseconds = 24 * 60 * 60 * 1000; // 1 day
-
-              if (timeDifference >= oneDayInMilliseconds && issue.state === 'open') {
-                console.log('Issue ' + issue.number + ' needs an update');
-                const commentText = 'Hey, this is a test comment.';
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: issue.number,
-                  body: commentText
-                });
-              }
-            }
+            issues.forEach((issue) => {
+              console.log(issue.title);
+            });
