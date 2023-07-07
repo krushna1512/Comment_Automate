@@ -33,7 +33,7 @@ jobs:
 
               if (timeDifference >= oneHourInMilliseconds && issue.state === 'open') {
                 console.log('Issue ' + issue.number + ' needs an update');
-                await github.rest.issues.createComment({
+                  github.rest.issues.createComment({
                   issue_number: context.issue.number,
                   owner: context.repo.owner,
                   repo: context.repo.repo,
