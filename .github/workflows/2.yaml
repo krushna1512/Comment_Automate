@@ -16,7 +16,8 @@ jobs:
           script: |
             const creator = context.payload.sender.login;
             const opts = github.rest.issues.listForRepo.endpoint.merge({
-              ...context.issue,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               creator,
               state: 'open'
             });
@@ -31,13 +32,14 @@ jobs:
               const timeDifference = currentDate - issueLastUpdated;
               const oneHourInMilliseconds = 60 * 60 * 1000; // 1 hour
 
-              if (timeDifference >= oneHourInMilliseconds && issue.state === 'open') {
+              if (timeDifference >= oneHourInMilliseconds) {
                 console.log('Issue ' + issue.number + ' needs an update');
-                  github.rest.issues.createComment({
-                  issue_number: context.issue.number,
+                const commentText = 'Hey';
+                await github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  body: 'Hey'
+                  issue_number: issue.number,
+                  body: commentText
                 });
               }
             }
