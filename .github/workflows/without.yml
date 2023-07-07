@@ -44,3 +44,4 @@ jobs:
           }
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        shell: node
