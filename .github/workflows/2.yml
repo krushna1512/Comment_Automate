@@ -18,7 +18,7 @@ jobs:
             const opts = github.rest.issues.listForRepo.endpoint.merge({
               ...context.issue,
               creator,
-              state: 'open'
+              state: 'all'
             });
             const issues = await github.paginate(opts);
 
