@@ -1,26 +1,52 @@
-name: 'old automate comment'
+name: 'without'
 
 on:
   workflow_dispatch:
 
-
 jobs:
-  commentOnInactiveIssues:
+  check_inactive_issues:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          python-version: '3.x'
+          node-version: '14'
 
       - name: Install dependencies
-        run: pip install PyGithub
+        run: npm install @actions/github
 
-      - name: Comment on inactive issues
-        run: python scripts/automate_comment.py ${{ secrets.TOKEN }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      - name: Add comment to inactive issues
+        run: |
+          const { GitHub, context } = require('@actions/github');
+
+          async function addCommentToInactiveIssues() {
+            const octokit = new GitHub(process.env.GITHUB_TOKEN);
+            const issuesResponse = await octokit.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            });
+
+            const issues = issuesResponse.data;
+            const fourDaysAgo = new Date();
+            fourDaysAgo.setDate(fourDaysAgo.getDate() - 4);
+
+            for (const issue of issues) {
+              const lastActivityDate = new Date(issue.updated_at);
+              if (lastActivityDate < fourDaysAgo && issue.comments === 0) {
+                const commentBody = {
+                  issue_number: issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: "It seems there has been no activity on this issue for the past four days. If you still require assistance, please let us know."
+                };
+
+                await octokit.rest.issues.createComment(commentBody);
+              }
+            }
+          }
+
+          addCommentToInactiveIssues();
