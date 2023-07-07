@@ -29,9 +29,9 @@ jobs:
 
               // Calculate the time difference in milliseconds
               const timeDifference = currentDate - issueLastUpdated;
-              const fifteenMinutesInMilliseconds = 15 * 60 * 1000; // 15 minutes 
+              const fifteenMinutesInMilliseconds = 15 * 60 * 1000; // 15 minutes
 
-              if (timeDifference >= fourDaysInMilliseconds && issue.state === 'open') {
+              if (timeDifference >= fifteenMinutesInMilliseconds && issue.state === 'open') {
                 console.log('Issue ' + issue.number + ' needs an update');
                 await github.rest.issues.createComment({
                   issue_number: context.issue.number,
