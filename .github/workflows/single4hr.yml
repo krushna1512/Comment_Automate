@@ -1,81 +1,42 @@
-name: 'Single File 4hr'
+name: List out the issues
 
 on:
-  workflow_dispatch:
+  workflow_dispatch
 
 jobs:
-  comment_on_inactive_issues:
+  list-issues:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
-      
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      
-      - name: Install dependencies
-        run: npm install @actions/github
-      
-      - name: Comment on inactive issues
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-        run: |
-          node -e '
-          const github = require("@actions/github");
 
-          async function commentOnInactiveIssues() {
-            const context = github.context;
-            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-            const repo = context.repo.repo;
-            const owner = context.repo.owner;
-            const currentDateTime = new Date().toISOString();
-            const currentDateTimeMinusFourDays = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
-            
-            // Retrieve the list of open issues for the repository
-            const { data: issues } = await octokit.rest.issues.listForRepo({
-              owner: owner,
-              repo: repo,
-              state: "open"
+      - name: List issues
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const creator = context.payload.sender.login;
+            const opts = github.rest.issues.listForRepo.endpoint.merge({
+              ...context.issue,
+              creator,
+              state: 'open'
             });
-            
-            // Iterate over each issue and check for inactivity
+            const issues = await github.paginate(opts);
+
+            const tenMinutesAgo = new Date();
+            tenMinutesAgo.setMinutes(tenMinutesAgo.getMinutes() - 10);
+
             for (const issue of issues) {
-              // Retrieve the list of comments for the issue
-              const { data: comments } = await octokit.rest.issues.listComments({
-                owner: owner,
-                repo: repo,
-                issue_number: issue.number
+              const comments = await github.rest.issues.listComments({
+                ...context.issue,
+                per_page: 100
               });
-              
-              const lastComment = comments[comments.length - 1];
-              
-              // Check if the last comment is older than 4 days or if no comments exist
-              if (!lastComment || lastComment.created_at < currentDateTimeMinusFourDays) {
-                // Retrieve the list of assignees for the issue
-                const { data: assignees } = await octokit.rest.issues.listAssignees({
-                  owner: owner,
-                  repo: repo,
-                  issue_number: issue.number
-                });
-                
-                const assigneeLogins = assignees.map(assignee => assignee.login);
-                const assigneeMentions = assigneeLogins.map(login => `@${login}`).join(" ");
-                
-                // Create a comment notifying the assignees about the inactivity
-                const comment = `Hey ${assigneeMentions}, This issue is not updated since 4 days, can you please give us some update here ?`;
-                
-                await octokit.rest.issues.createComment({
-                  owner: owner,
-                  repo: repo,
-                  issue_number: issue.number,
-                  body: comment
+
+              const lastComment = comments.data[comments.data.length - 1];
+
+              if (!lastComment || new Date(lastComment.created_at) < tenMinutesAgo) {
+                await github.rest.issues.createComment({
+                  ...context.issue,
+                  body: 'Issue is inactive'
                 });
               }
             }
-          }
-          
-          commentOnInactiveIssues();
-          '
