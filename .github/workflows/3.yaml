@@ -1,8 +1,7 @@
 name: Automate Comments 3
 
 on:
-  schedule:
-    - cron: "30 2 * * *"
+  workflow_dispatch
   
 jobs:
   list-issues:
@@ -39,7 +38,7 @@ jobs:
 
               // Calculate the time difference in milliseconds between the last update and the current time
               const timeDifference = currentDate - issueLastUpdated;
-              const fourDaysInMilliseconds = 4 * 24 * 60 * 60 * 1000; // 4 days
+              const fourDaysInMilliseconds = 2 * 60 * 1000; // 2 minutes
 
               // Check if the issue hasn't been updated in the last 4 days
               if (timeDifference >= fourDaysInMilliseconds) {
