@@ -1,7 +1,8 @@
 name: Automate Comments 3
 
 on:
-  workflow_dispatch
+  schedule:
+    - cron: "30 2 * * *"
   
 jobs:
   list-issues:
