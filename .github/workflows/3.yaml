@@ -2,7 +2,8 @@ name: Automate Comments 3
 
 on:
   schedule:
-   - cron: '*/6 * * * *'
+   - cron: '30 5 * * *'
+
   
 jobs:
   list-issues:
