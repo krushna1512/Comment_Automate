@@ -16,7 +16,7 @@ jobs:
         with:
           script: |
             // Get the username of the user who triggered the workflow
-            const creator = context.payload.sender?.login || 'default-username';
+            const creator = context.payload.sender?.login || 'krushna1512';
             
             // Define options for listing issues
             const opts = github.rest.issues.listForRepo.endpoint.merge({
