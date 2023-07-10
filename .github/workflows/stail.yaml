@@ -1,0 +1,20 @@
+name: 'Comment on stale issues'
+
+on:
+  workflow_dispatch
+
+jobs:
+
+  stale:
+
+    name: Comment on stale issues
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment on stale issues
+        uses: yapsody/actions/.github/workflows/stale-issues.yml@master
+        secrets: inherit
+        with:
+          days-before-stale: 5
+          days-before-issue-close: 30
+          remove-stale-when-updated: true
+          stale-issue-message: 'This issue has not been updated in last 5 days, Please keep your word on issue update agreement in place.'
