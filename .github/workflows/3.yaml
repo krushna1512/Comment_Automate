@@ -1,10 +1,8 @@
 name: Automate Comments 3
 
-# on:
-#   schedule:
-#     - cron: '30 2 * * *'
 on:
-  workflow_dispatch
+  schedule:
+    - cron: '*/6 * * * *'
   
 jobs:
   list-issues:
@@ -18,7 +16,8 @@ jobs:
         with:
           script: |
             // Get the username of the user who triggered the workflow
-            const creator = 'krushna1512';
+            const creator = 'yapbot';
+            console.log('Step 1: Checking out repository');
 
             // Define options for listing issues
             const opts = github.rest.issues.listForRepo.endpoint.merge({
@@ -27,13 +26,16 @@ jobs:
               creator,
               state: 'open'
             });
-
+            
+            console.log('Step 2: Retrieving issues');
             // Retrieve all open issues for the repository
             const issues = await github.paginate(opts);
 
+            console.log('Step 3: Processing issues');
             // Loop through each issue
             for (let i = 0; i < issues.length; i++) {
               const issue = issues[i];
+              console.log('Processing issue:', issue.number);
 
               // Get the last updated timestamp of the issue and the current timestamp
               const issueLastUpdated = new Date(issue.updated_at);
@@ -41,7 +43,7 @@ jobs:
 
               // Calculate the time difference in milliseconds between the last update and the current time
               const timeDifference = currentDate - issueLastUpdated;
-              const fourDaysInMilliseconds = 6 * 60 * 1000; // 4 days in milliseconds
+              const fourDaysInMilliseconds = 2 * 60 * 1000; // 4 days in milliseconds
 
               // Check if the issue hasn't been updated in the last 4 days
               if (timeDifference >= fourDaysInMilliseconds) {
@@ -49,7 +51,6 @@ jobs:
 
                 // Create a comment text to be posted on the issue
                 const commentText = `Hey @${issue.user.login}, This issue is not updated since 4 days, can you please give us some update here ?`;
-                
                 console.log('Comment text:', commentText);
 
                 // Post a comment on the issue
@@ -63,3 +64,5 @@ jobs:
                 console.log('Comment posted on issue', issue.number);
               }
             }
+            
+            console.log('Step 4: Workflow completed');
