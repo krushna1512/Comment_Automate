@@ -16,7 +16,7 @@ jobs:
         with:
           script: |
             // Get the username of the user who triggered the workflow
-            const creator = 'yapbot';
+            const creator = 'krushna1512';
             console.log('Step 1: Checking out repository');
 
             // Define options for listing issues
