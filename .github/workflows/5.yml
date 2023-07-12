@@ -1,8 +1,10 @@
-name: Automate Comments 5
+name: Automate Comments 
 
 on:
-  workflow_dispatch
+  schedule:
+    - cron: '30 2 * * *'
 
+  
 jobs:
   list-issues:
     runs-on: ubuntu-latest
@@ -14,80 +16,54 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const waitTime = 5000; // Wait time in milliseconds
-            let retries = 3; // Maximum number of retries
+            // Get the username of the user who triggered the workflow
+            const creator = 'krushna1512';
+            console.log('Step 1: Checking out repository');
 
-            async function runScriptWithRetry() {
-              try {
-                // Wait for the GitHub object to be available
-                while (!github) {
-                  console.log('Waiting for GitHub object to be available...');
-                  await new Promise(resolve => setTimeout(resolve, waitTime));
-                }
+            // Define options for listing issues
+            const opts = github.rest.issues.listForRepo.endpoint.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              creator,
+              state: 'open'
+            });
+            
+            console.log('Step 2: Retrieving issues');
+            // Retrieve all open issues for the repository
+            const issues = await github.paginate(opts);
 
-                // Get the username of the user who triggered the workflow
-                const creator = 'krushna1512';
-                console.log('Step 1: Checking out repository');
+            console.log('Step 3: Processing issues');
+            // Loop through each issue
+            for (let i = 0; i < issues.length; i++) {
+              const issue = issues[i];
+              console.log('Processing issue:', issue.number);
 
-                // Define options for listing issues
-                const opts = github.rest.issues.listForRepo.endpoint.merge({
+              // Get the last updated timestamp of the issue and the current timestamp
+              const issueLastUpdated = new Date(issue.updated_at);
+              const currentDate = new Date();
+
+              // Calculate the time difference in milliseconds between the last update and the current time
+              const timeDifference = currentDate - issueLastUpdated;
+              const fourDaysInMilliseconds = 6 * 60 * 1000; // 4 days in milliseconds
+
+              // Check if the issue hasn't been updated in the last 4 days
+              if (timeDifference >= fourDaysInMilliseconds) {
+                console.log('Issue ' + issue.number + ' needs an update');
+
+                // Create a comment text to be posted on the issue
+                const commentText = `Hey @${issue.user.login}, This issue is not updated since 4 days, can you please give us some update here ?`;
+                console.log('Comment text:', commentText);
+
+                // Post a comment on the issue
+                await github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  creator,
-                  state: 'open'
+                  issue_number: issue.number,
+                  body: commentText
                 });
 
-                console.log('Step 2: Retrieving issues');
-                // Retrieve all open issues for the repository
-                const issues = await github.paginate(opts);
-
-                console.log('Step 3: Processing issues');
-                // Loop through each issue
-                for (let i = 0; i < issues.length; i++) {
-                  const issue = issues[i];
-                  console.log('Processing issue:', issue.number);
-
-                  // Get the last updated timestamp of the issue and the current timestamp
-                  const issueLastUpdated = new Date(issue.updated_at);
-                  const currentDate = new Date();
-
-                  // Calculate the time difference in milliseconds between the last update and the current time
-                  const timeDifference = currentDate - issueLastUpdated;
-                  const fourDaysInMilliseconds = 4 * 24 * 60 * 60 * 1000; // 4 days in milliseconds
-
-                  // Check if the issue hasn't been updated in the last 4 days
-                  if (timeDifference >= fourDaysInMilliseconds) {
-                    console.log('Issue ' + issue.number + ' needs an update');
-
-                    // Create a comment text to be posted on the issue
-                    const commentText = `Hey @${issue.user.login}, This issue is not updated since 4 days, can you please give us some update here ?`;
-                    console.log('Comment text:', commentText);
-
-                    // Post a comment on the issue
-                    await github.rest.issues.createComment({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      issue_number: issue.number,
-                      body: commentText
-                    });
-
-                    console.log('Comment posted on issue', issue.number);
-                  }
-                }
-
-                console.log('Step 4: Workflow completed');
-              } catch (error) {
-                console.error('An error occurred:', error);
-
-                if (retries > 0) {
-                  console.log(`Retrying in ${waitTime / 1000} seconds...`);
-                  retries--;
-                  await new Promise(resolve => setTimeout(resolve, waitTime));
-                  await runScriptWithRetry();
-                } else {
-                  console.error('Maximum retries exceeded. Workflow failed.');
-                }
+                console.log('Comment posted on issue', issue.number);
               }
             }
-
-            runScriptWithRetry();
+            
+            console.log('Step 4: Workflow completed');
