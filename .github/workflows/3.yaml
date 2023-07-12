@@ -18,7 +18,7 @@ jobs:
         with:
           script: |
             // Get the username of the user who triggered the workflow
-            const creator = 'yapbot';
+            const creator = 'krushna1512';
 
             // Define options for listing issues
             const opts = github.rest.issues.listForRepo.endpoint.merge({
@@ -41,7 +41,7 @@ jobs:
 
               // Calculate the time difference in milliseconds between the last update and the current time
               const timeDifference = currentDate - issueLastUpdated;
-              const fourDaysInMilliseconds = 1 * 60 * 1000; // 4 days in milliseconds
+              const fourDaysInMilliseconds = 6 * 60 * 1000; // 4 days in milliseconds
 
               // Check if the issue hasn't been updated in the last 4 days
               if (timeDifference >= fourDaysInMilliseconds) {
