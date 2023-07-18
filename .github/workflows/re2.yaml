@@ -8,10 +8,12 @@ on:
 #         required: true
       comment:
         description: 'Comment message'
-        required: true
+        default: 'This issue has not been updated recently, could you please provide an update?'
       mention:
-        description: 'Mention user'
-        required: true
+          description: 'Mention owner/assignee'
+          default: 'owner'
+          type: choice
+          options: ['owner', 'assignees']
      
 
 jobs:
