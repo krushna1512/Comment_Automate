@@ -15,7 +15,6 @@ on:
         options: ['owner', 'assignees']
 
 jobs:
-  # Step 1: Check if workflow triggered by scheduler
   trigger-workflow:
     runs-on: ubuntu-latest
     steps:
@@ -23,20 +22,10 @@ jobs:
         id: check-scheduler
         run: echo "::set-output name=is_scheduler_triggered::${{ contains(github.event_name, 'schedule') }}"
 
-      # Step 2: Trigger reusable workflow for scheduler-triggered case
-      - name: Trigger Reusable Workflow (Scheduler)
+      - name: Trigger Reusable Workflow
         if: steps.check-scheduler.outputs.is_scheduler_triggered == 'true'
         uses: krushna1512/reusable_workflow/.github/workflows/automate_comment1.yaml@main
-        with:
-          days: 4  # Default value of 4 days
-          comment: 'hey'  # Default comment message
-          mention: 'owner'  # Default mention owner
 
-      # Step 3: Trigger reusable workflow for other cases
-      - name: Trigger Reusable Workflow (Other)
+      - name: Trigger Reusable Workflow
         if: steps.check-scheduler.outputs.is_scheduler_triggered != 'true'
         uses: krushna1512/reusable_workflow/.github/workflows/automate_comment1.yaml@main
-        with:
-          days: ${{ github.event.inputs.days }}  # User-provided value or default value if not provided
-          comment: ${{ github.event.inputs.comment }}  # User-provided value or default value if not provided
-          mention: ${{ github.event.inputs.mention }}  # User-provided value or default value if not provided
