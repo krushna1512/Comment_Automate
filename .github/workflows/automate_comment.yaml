@@ -12,11 +12,12 @@ on:
       comment:
         description: 'Comment message'
         required: true
+        default: 'Hey'
       mention:
         description: 'Mention owner/assignee'
         required: true
         default: 'owner'
-        options: ['owner', 'assignee']
+      
 
 jobs:
   list-issues:
