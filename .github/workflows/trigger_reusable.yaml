@@ -9,6 +9,6 @@ jobs:
         name: Trigger Reusable Workflow
         uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
         with:
-          days: 4
+          days: 1
           comment: 'Hey'
           mention: 'owner'
