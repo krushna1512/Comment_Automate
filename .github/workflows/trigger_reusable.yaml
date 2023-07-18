@@ -1,7 +1,7 @@
 name: Trigger Reusable Workflow
 
 on:
-  workflow_dispatch # Runs every day at midnight UTC
+  workflow_dispatch 
 
 jobs:
   trigger-workflow:
