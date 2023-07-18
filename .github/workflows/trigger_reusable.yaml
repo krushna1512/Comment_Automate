@@ -4,11 +4,10 @@ on:
   workflow_dispatch # Runs every day at midnight UTC
 
 jobs:
-  trigger-workflow:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Reusable Workflow
-        uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
+  call-workflow-passing-data:
+    uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml
+    with:
+      config-path: .github/labeler.yml
         with:
           days: 4
           comment: 'Hey'
