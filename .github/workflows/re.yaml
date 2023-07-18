@@ -2,7 +2,7 @@ name: Trigger
 
 on:
   workflow_dispatch:
-   inputs:
+    inputs:
       mention:
         description: 'Mention owner/assignee'
         required: true
@@ -10,13 +10,15 @@ on:
         default: 'owner'
         options: ['owner', 'assignees']
    
-
 jobs:
   trigger-workflow:
-        name: Trigger Reusable Workflow
-        uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
+    name: Trigger Reusable Workflow
+    uses: krushna1512/reusable_workflow/.github/workflows/automate_comment@main
+    steps:
+      - name: Trigger the reusable workflow
         with:
-          days: 3
-          comment: 'h'
-          mention: ${{ github.event.inputs.mention }}
-          
+          workflow: 'Automate Comments'
+          inputs:
+            days: 3
+            comment: 'h'
+            mention: ${{ github.event.inputs.mention }}
