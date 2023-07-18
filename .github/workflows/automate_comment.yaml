@@ -1,42 +1,65 @@
-name: 'automate comment'
-
-# on:
-#   schedule:
-#    - cron: '0 0 * * *
+name: Automate Comments
 
 on:
-  workflow_dispatch:
+ workflow_dispatch
 
 jobs:
-  comment_on_inactive_issues:
+  list-issues:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
-      
-      - name: Comment on inactive issues
-        run: |
-          current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ" -d "-4 minutes")
-          repo=$(basename $GITHUB_REPOSITORY)
-          owner=$(dirname $GITHUB_REPOSITORY)
-          assignees=""
-          
-          for issue in $(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$GITHUB_REPOSITORY/issues?state=open" | jq -r '.[] | @base64'); do
-              issue_json=$(echo $issue | base64 -d)
-              last_comment=$(echo $issue_json | jq -r '.comments_url' | xargs -I {} curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" {} | jq -r '.[] | @base64' | tail -n 1)
-              last_comment_json=$(echo $last_comment | base64 -d)
-              last_comment_date=$(echo $last_comment_json | jq -r '.created_at')
-              
-              if [[ -z "$last_comment_date" || "$last_comment_date" < "$current_date" ]]; then
-                  assignees_json=$(echo $issue_json | jq -r '.assignees')
-                  assignees=$(echo $assignees_json | jq -r '.[].login' | xargs | sed 's/ / @/g')
-                  
-                  comment="Hello$assignees! It seems no activity has been recorded on this issue for the past 4 minutes. Is there anything I can assist you with?"
-                  issue_number=$(echo $issue_json | jq -r '.number')
-                  curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -d "{\"body\": \"$comment\"}" "https://api.github.com/repos/$owner/$repo/issues/$issue_number/comments"
-              fi
-          done
 
-      
+      - name: List and update issues  
+        uses: actions/github-script@v6
+        with:
+          script: |
+            console.log('Step 1: Checking out repository');
+
+            // Define options for listing issues
+            const opts = github.rest.issues.listForRepo.endpoint.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            });
+
+            console.log('Step 2: Retrieving issues');
+            // Retrieve all open issues for the repository
+            const issues = await github.paginate(opts);
+
+            console.log('Step 3: Processing issues');
+            // Loop through each issue
+            for (let i = 0; i < issues.length; i++) {
+              const issue = issues[i];
+              console.log('Processing issue:', issue.number);
+
+              // Get the last updated timestamp of the issue and the current timestamp
+              const issueLastUpdated = new Date(issue.updated_at);
+              const currentDate = new Date();
+
+              // Calculate the time difference in milliseconds between the last update and the current time
+              const timeDifference = currentDate - issueLastUpdated;
+              const daysInMilliseconds = 4 * 24 * 60 * 60 * 1000; // Modify the number of days here
+
+              // Check if the issue hasn't been updated in the specified number of days
+              if (timeDifference >= daysInMilliseconds) {
+                console.log('Issue ' + issue.number + ' needs an update');
+
+                // Create a comment text to be posted on the issue
+                const commentText = `Hey @${issue.user.login}, This issue has not been updated in the last ${daysInMilliseconds / (24 * 60 * 60 * 1000)} days. Could you please provide an update?`;
+                console.log('Comment text:', commentText);
+
+                // Post a comment on the issue
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: commentText
+                });
+
+                console.log('Comment posted on issue', issue.number);
+              }
+            }
+
+            console.log('Step 4: Workflow completed');
 
