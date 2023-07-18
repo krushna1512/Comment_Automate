@@ -5,9 +5,11 @@ on:
 
 jobs:
   call-workflow-passing-data:
-    uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
-    with:
-      days: 4
-      comment: 'Hey'
-      mention: 'owner'
-
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Reusable Workflow
+        uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
+        with:
+          days: 4
+          comment: 'Hey'
+          mention: 'owner'
