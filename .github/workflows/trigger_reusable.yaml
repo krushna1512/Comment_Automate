@@ -7,10 +7,12 @@ jobs:
   trigger-workflow:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Reusable Workflow
-        uses: actions/checkout@v2  # Checkout the repository containing the reusable workflow
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        # Step to checkout the repository containing the reusable workflow
 
       - name: Dispatch Workflow
+        id: dispatch
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.TOKEN }}
@@ -22,4 +24,11 @@ jobs:
               "comment": "Hey",
               "mention": "owner"
             }
+        # Step to dispatch the reusable workflow from the specified repository
 
+      - name: Debug Dispatch Workflow
+        run: |
+          echo "Workflow Run ID: ${{ steps.dispatch.outputs.workflow-run-id }}"
+          echo "Event Type: ${{ steps.dispatch.outputs.event-type }}"
+          echo "Result: ${{ steps.dispatch.outputs.result }}"
+        # Step to display the outputs of the Dispatch Workflow step for debugging
