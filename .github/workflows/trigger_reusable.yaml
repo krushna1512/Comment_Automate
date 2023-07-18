@@ -1,13 +1,12 @@
 name: Trigger Reusable Workflow
 
 on:
-  workflow_dispatch: # Runs every day at midnight UTC
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at midnight UTC
 
 jobs:
-  call-workflow-passing-data:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Reusable Workflow
+  trigger-workflow:
+        name: Trigger Reusable Workflow
         uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
         with:
           days: 4
