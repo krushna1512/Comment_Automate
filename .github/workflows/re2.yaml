@@ -3,9 +3,9 @@ name: Trigger Reusable Workflow 2
 on:
   workflow_dispatch:
     inputs:
-      days:
-        description: 'Number of days'
-        required: true
+#       days:
+#         description: 'Number of days'
+#         required: true
       comment:
         description: 'Comment message'
         required: true
