@@ -1,6 +1,8 @@
-name: Automate Comments dy
+name: Automate Comments
 
 on:
+  schedule:
+    - cron: '30 2 * * *'
   workflow_dispatch:
     inputs:
       days:
@@ -11,7 +13,7 @@ on:
         description: 'Comment message'
         required: true
       mention:
-        description: 'Mention'
+        description: 'Mention owner/assignee'
         required: true
         default: 'owner'
         options: ['owner', 'assignee']
