@@ -6,20 +6,18 @@ on:
       days:
         description: 'Number of days'
         required: true
-        default: '4'
       comment:
         description: 'Comment message'
         required: true
-        default: 'h'
       mention:
         description: 'Mention user'
         required: true
-        default: 'owner'
+     
 
 jobs:
- trigger-workflow:
-        uses: krushna1512/reusable_workflow/.github/workflows/automate_comment1.yaml@main
-        with:
-          days: ${{ github.event.inputs.days }}
-          comment: ${{ github.event.inputs.comment }}
-          mention: ${{ github.event.inputs.mention }}
+  trigger-workflow:
+    uses: krushna1512/reusable_workflow/.github/workflows/automate_comment1.yaml@main
+    with:
+      days: ${{ github.event.inputs.days }}
+      comment: ${{ github.event.inputs.comment }}
+      mention: ${{ github.event.inputs.mention }}
