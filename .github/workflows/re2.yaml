@@ -10,3 +10,4 @@ jobs:
         with:
           days: 3
           comment: 'h'
+          mention: 'owner'
