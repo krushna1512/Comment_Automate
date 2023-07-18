@@ -6,8 +6,8 @@ on:
       days:
         description: 'Number of days for considering an issue outdated'
         required: true
-        type: string
-        
+        type: number
+        default: 4
       comment:
         description: 'Comment message'
         required: true
