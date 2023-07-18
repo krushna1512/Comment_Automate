@@ -1,7 +1,7 @@
 name: Automate Comments
 
 on:
- workflow_dispatch
+  workflow_dispatch
 
 jobs:
   list-issues:
@@ -10,7 +10,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: List and update issues  
+      - name: Prompt for days
+        id: prompt
+        uses: andstor/ask-for-input-action@v1
+        with:
+          name: days
+          prompt: 'Enter the number of days for considering an issue outdated:'
+
+      - name: List and update issues
         uses: actions/github-script@v6
         with:
           script: |
@@ -39,14 +46,14 @@ jobs:
 
               // Calculate the time difference in milliseconds between the last update and the current time
               const timeDifference = currentDate - issueLastUpdated;
-              const daysInMilliseconds = 4 * 24 * 60 * 60 * 1000; // Modify the number of days here
+              const daysInMilliseconds = parseInt('{{inputs.days}}') * 24 * 60 * 60 * 1000; // Use the input value here
 
               // Check if the issue hasn't been updated in the specified number of days
               if (timeDifference >= daysInMilliseconds) {
                 console.log('Issue ' + issue.number + ' needs an update');
 
                 // Create a comment text to be posted on the issue
-                const commentText = `Hey @${issue.user.login}, This issue has not been updated in the last ${daysInMilliseconds / (24 * 60 * 60 * 1000)} days. Could you please provide an update?`;
+                const commentText = `Hey @${issue.user.login}, This issue has not been updated in the last ${parseInt('{{inputs.days}}')} days. Could you please provide an update?`;
                 console.log('Comment text:', commentText);
 
                 // Post a comment on the issue
@@ -62,4 +69,3 @@ jobs:
             }
 
             console.log('Step 4: Workflow completed');
-
