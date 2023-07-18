@@ -5,7 +5,7 @@ on:
 
 jobs:
   call-workflow-passing-data:
-    uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml
+    uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
     with:
       config-path: .github/labeler.yml
         with:
