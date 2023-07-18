@@ -1,13 +1,18 @@
 name: Automate Comments
 
 on:
-  workflow_dispatch
+  schedule:
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Number of days for considering an issue outdated'
+        required: true
+        default: 4
 
 jobs:
   list-issues:
     runs-on: ubuntu-latest
-    env:
-      DAYS: ${{ secrets.DAYS }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -41,14 +46,14 @@ jobs:
 
               // Calculate the time difference in milliseconds between the last update and the current time
               const timeDifference = currentDate - issueLastUpdated;
-              const daysInMilliseconds = parseInt(process.env.DAYS) * 24 * 60 * 60 * 1000; // Use the environment variable value here
+              const daysInMilliseconds = parseInt('{{ github.event.inputs.days }}') * 24 * 60 * 60 * 1000; // Use the input value here
 
               // Check if the issue hasn't been updated in the specified number of days
               if (timeDifference >= daysInMilliseconds) {
                 console.log('Issue ' + issue.number + ' needs an update');
 
                 // Create a comment text to be posted on the issue
-                const commentText = `Hey @${issue.user.login}, This issue has not been updated in the last ${parseInt(process.env.DAYS)} days. Could you please provide an update?`;
+                const commentText = `Hey @${issue.user.login}, This issue has not been updated in the last ${parseInt('{{ github.event.inputs.days }}')} days. Could you please provide an update?`;
                 console.log('Comment text:', commentText);
 
                 // Post a comment on the issue
