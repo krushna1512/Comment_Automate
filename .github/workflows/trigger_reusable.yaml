@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Reusable Workflow
-        uses: krushna1512/reusable_workflow@main
+        uses: krushna1512/reusable_workflow/blob/main/.github/workflows/automate_comment.yaml@main
         with:
           days: 4
           comment: 'Hey'
