@@ -23,6 +23,6 @@ jobs:
     name: Trigger Reusable Workflow
     uses: krushna1512/reusable_workflow/.github/workflows/automate_comment1.yaml@main
     with:
-      days: ${{ github.event.inputs.days }}
+      days: parseInt('{{ inputs.days }}')
       comment: ${{ github.event.inputs.comment }}
       mention: ${{ github.event.inputs.mention }}
