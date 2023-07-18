@@ -13,7 +13,7 @@ on:
 jobs:
   trigger-workflow:
     name: Trigger Reusable Workflow
-    uses: krushna1512/reusable_workflow/.github/workflows/automate_comment@main
+    uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
     steps:
       - name: Trigger the reusable workflow
         with:
