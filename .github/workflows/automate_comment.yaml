@@ -1,8 +1,6 @@
-name: Automate Comments
+name: Automate Comments dy
 
 on:
-  schedule:
-    - cron: '30 2 * * *'
   workflow_dispatch:
     inputs:
       days:
