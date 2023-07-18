@@ -8,8 +8,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Reusable Workflow
-        uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
+        uses: actions/checkout@v2  # Checkout the repository containing the reusable workflow
+
+      - name: Dispatch Workflow
+        uses: peter-evans/repository-dispatch@v1
         with:
-          days: 4
-          comment: 'Hey'
-          mention: 'owner'
+          token: ${{ secrets.TOKEN }}
+          repository: krushna1512/reusable_workflow
+          event-type: automate-comment
+          client-payload: |
+            {
+              "days": 4,
+              "comment": "Hey",
+              "mention": "owner"
+            }
+
