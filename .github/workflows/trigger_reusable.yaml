@@ -1,14 +1,13 @@
 name: Trigger Reusable Workflow
 
 on:
-  workflow_dispatch # Runs every day at midnight UTC
+  workflow_dispatch: # Runs every day at midnight UTC
 
 jobs:
   call-workflow-passing-data:
     uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
     with:
-      config-path: .github/labeler.yml
-        with:
-          days: 4
-          comment: 'Hey'
-          mention: 'owner'
+      days: 4
+      comment: 'Hey'
+      mention: 'owner'
+
