@@ -1,15 +1,27 @@
 name: Trigger Reusable Workflow
 
 on:
- workflow_dispatch  # Runs every day at midnight UTC
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at midnight UTC
 
 jobs:
   trigger-workflow:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Trigger Reusable Workflow
-        uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
-        with:
-          days: 4
-          comment: 'Hey'
-          mention: 'owner'
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/krushna1512/reusable_workflow/dispatches" \
+            -d '{
+              "event_type": "automate-comment",
+              "client_payload": {
+                "days": 4,
+                "comment": "Hey",
+                "mention": "owner"
+              }
+            }'
