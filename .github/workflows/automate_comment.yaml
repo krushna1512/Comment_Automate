@@ -1,14 +1,20 @@
 name: Automate Comments
 
 on:
-  schedule:
-    - cron: '30 2 * * *'
   workflow_dispatch:
     inputs:
       days:
         description: 'Number of days for considering an issue outdated'
         required: true
         default: 4
+      comment:
+        description: 'Comment message'
+        required: true
+      mention:
+        description: 'Mention owner or assignee'
+        required: true
+        default: 'owner'
+        options: ['owner', 'assignee']
 
 jobs:
   list-issues:
@@ -52,8 +58,17 @@ jobs:
               if (timeDifference >= daysInMilliseconds) {
                 console.log('Issue ' + issue.number + ' needs an update');
 
+                // Create the comment text with mention
+                const mention = '{{ github.event.inputs.mention }}';
+                let mentionText = '';
+                if (mention === 'owner') {
+                  mentionText = `@${issue.user.login}`;
+                } else if (mention === 'assignee' && issue.assignee) {
+                  mentionText = `@${issue.assignee.login}`;
+                }
+
                 // Create a comment text to be posted on the issue
-                const commentText = `Hey @${issue.user.login}, This issue has not been updated in the last ${parseInt('{{ github.event.inputs.days }}')} days. Could you please provide an update?`;
+                const commentText = `Hey ${mentionText}, ${github.event.inputs.comment}`;
                 console.log('Comment text:', commentText);
 
                 // Post a comment on the issue
