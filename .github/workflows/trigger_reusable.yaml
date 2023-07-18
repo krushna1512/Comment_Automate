@@ -1,34 +1,15 @@
 name: Trigger Reusable Workflow
 
 on:
-#   schedule:
-#     - cron: '0 0 * * *'  # Runs every day at midnight UTC
-  workflow_dispatch:
-    inputs:
-      days:
-        description: 'Number of days for considering an issue outdated'
-        required: true
-        default: 4
-      comment:
-        description: 'Comment message'
-        required: true
-        default: 'Hey'
-      mention:
-        description: 'Mention owner/assignee'
-        required: true
-        default: 'owner'
+  workflow_dispatch  # Runs every day at midnight UTC
 
 jobs:
   trigger-workflow:
     runs-on: ubuntu-latest
-    env:
-      REUSABLE_WORKFLOW_TOKEN: ${{ secrets.REUSABLE_WORKFLOW_TOKEN }}  # Set the GitHub token secret as an environment variable
     steps:
-      - name: Call Reusable Workflow
-        uses: krushna1512/reusable_workflow@main
+      - name: Trigger Reusable Workflow
+        uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
         with:
-          days: ${{ github.event.inputs.days }}
-          comment: ${{ github.event.inputs.comment }}
-          mention: ${{ github.event.inputs.mention }}
-        env:
-          GITHUB_TOKEN: ${{ env.TOKEN }}  # Pass the GitHub token to the reusable workflow step
+          days: 4
+          comment: 'Hey'
+          mention: 'owner'
