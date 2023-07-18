@@ -3,11 +3,18 @@ name: Trigger
 on:
   workflow_dispatch:
     inputs:
+      days:
+        description: 'Number of days for considering an issue outdated'
+        required: true
+        type: number
+      comment:
+        description: 'Comment message'
+        required: true
+        type: string
       mention:
         description: 'Mention owner/assignee'
         required: true
         type: choice
-        default: 'owner'
         options: ['owner', 'assignees']
    
 jobs:
