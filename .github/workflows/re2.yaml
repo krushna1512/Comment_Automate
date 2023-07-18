@@ -1,8 +1,8 @@
 name: Trigger Reusable Workflow 2
 
 on:
-    workflow_dispatch:
-     inputs:
+  workflow_dispatch:
+    inputs:
       days:
         description: 'Number of days'
         required: true
@@ -17,8 +17,7 @@ on:
         default: 'owner'
 
 jobs:
-  trigger-workflow:
-        name: Trigger Reusable Workflow
+ trigger-workflow:
         uses: krushna1512/reusable_workflow/.github/workflows/automate_comment1.yaml@main
         with:
           days: ${{ github.event.inputs.days }}
