@@ -14,11 +14,8 @@ jobs:
   trigger-workflow:
     name: Trigger Reusable Workflow
     uses: krushna1512/reusable_workflow/.github/workflows/automate_comment.yaml@main
-    steps:
-      - name: Trigger the reusable workflow
-        with:
-          workflow: 'Automate Comments'
-          inputs:
+   
+    with:
             days: 3
             comment: 'h'
             mention: ${{ github.event.inputs.mention }}
