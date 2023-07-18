@@ -1,0 +1,12 @@
+name: Trigger Reusable Workflow
+
+on:
+  workflow_dispatch
+
+jobs:
+  trigger-workflow:
+        name: Trigger Reusable Workflow
+        uses: krushna1512/reusable_workflow/.github/workflows/automate_comment1.yaml@main
+        with:
+          days: 3
+          comment: 'h'
