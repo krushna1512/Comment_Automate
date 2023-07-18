@@ -1,0 +1,16 @@
+name: Trigger Reusable Workflow
+
+on:
+  schedule:
+    - cron: '*/6 * * * *'  # Runs every day at midnight UTC
+
+jobs:
+  trigger-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Reusable Workflow
+        uses: krushna1512/reusable_workflow@main
+        with:
+          days: 4
+          comment: 'Hey'
+          mention: 'owner'
