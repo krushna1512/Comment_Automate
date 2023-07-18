@@ -6,16 +6,11 @@ on:
 jobs:
   list-issues:
     runs-on: ubuntu-latest
+    env:
+      DAYS: ${{ secrets.DAYS }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Prompt for days
-        id: prompt
-        uses: andstor/ask-for-input-action@v1
-        with:
-          name: days
-          prompt: 'Enter the number of days for considering an issue outdated:'
 
       - name: List and update issues
         uses: actions/github-script@v6
@@ -46,14 +41,14 @@ jobs:
 
               // Calculate the time difference in milliseconds between the last update and the current time
               const timeDifference = currentDate - issueLastUpdated;
-              const daysInMilliseconds = parseInt('{{inputs.days}}') * 24 * 60 * 60 * 1000; // Use the input value here
+              const daysInMilliseconds = parseInt(process.env.DAYS) * 24 * 60 * 60 * 1000; // Use the environment variable value here
 
               // Check if the issue hasn't been updated in the specified number of days
               if (timeDifference >= daysInMilliseconds) {
                 console.log('Issue ' + issue.number + ' needs an update');
 
                 // Create a comment text to be posted on the issue
-                const commentText = `Hey @${issue.user.login}, This issue has not been updated in the last ${parseInt('{{inputs.days}}')} days. Could you please provide an update?`;
+                const commentText = `Hey @${issue.user.login}, This issue has not been updated in the last ${parseInt(process.env.DAYS)} days. Could you please provide an update?`;
                 console.log('Comment text:', commentText);
 
                 // Post a comment on the issue
