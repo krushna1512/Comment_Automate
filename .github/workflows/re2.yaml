@@ -7,10 +7,10 @@ on:
   workflow_dispatch:
  
     inputs:
-      days:
-        description: 'Number of days for considering an issue outdated'
-        required: true
-        default: 4
+#       days:
+#         description: 'Number of days for considering an issue outdated'
+#         required: true
+#         default: 4
       comment:
         description: 'Comment message'
         default: 'This issue has not been updated recently, could you please provide an update?'
@@ -25,6 +25,6 @@ jobs:
   trigger-workflow:
     uses: krushna1512/reusable_workflow/.github/workflows/automate_comment1.yaml@main
     with:
-      days: ${{ github.event.inputs.comment }}
+      days: 3
       comment: ${{ github.event.inputs.comment }}
       mention: ${{ github.event.inputs.mention }}
