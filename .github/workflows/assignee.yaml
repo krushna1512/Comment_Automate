@@ -1,8 +1,7 @@
-name: Automate Comments Assignee
+name: Automate Comments assignees
 
 on:
-  workflow_dispatch
-
+ workflow_dispatch
 jobs:
   list-issues:
     runs-on: ubuntu-latest
@@ -39,15 +38,15 @@ jobs:
 
               // Calculate the time difference in milliseconds between the last update and the current time
               const timeDifference = currentDate - issueLastUpdated;
-              const fourDaysInMilliseconds = 4 * 60 * 1000; // 4 days in milliseconds
+              const fourDaysInMilliseconds = 1 * 60 * 1000; // 4 days in milliseconds
 
               // Check if the issue hasn't been updated in the last 4 days
               if (timeDifference >= fourDaysInMilliseconds) {
                 console.log('Issue ' + issue.number + ' needs an update');
 
                 // Create a comment text to be posted on the issue
-                const assignee = issue.assignee ? `@${issue.assignee.login}` : 'assignee';
-                const commentText = `Hey ${assignee}, This issue is not updated since 4 days, can you please give us some update here?`;
+                const assigneesList = issue.assignees.map(assignee => `@${assignee.login}`).join(' ');
+                const commentText = `Hey ${assigneesList}, This issue is not updated since 4 days, can you please give us some update here?`;
                 console.log('Comment text:', commentText);
 
                 // Post a comment on the issue
