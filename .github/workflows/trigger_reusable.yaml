@@ -1,8 +1,7 @@
 name: Trigger Reusable Workflow
 
 on:
-  schedule:
-    - cron: "*/6 * * * *"
+ workflow_dispatch
 
 jobs:
   trigger-workflow:
