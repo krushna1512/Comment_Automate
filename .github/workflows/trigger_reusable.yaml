@@ -8,6 +8,6 @@ jobs:
     name: Trigger Reusable Workflow
     uses: krushna1512/reusable_workflow/.github/workflows/automate_comment1.yaml@main
     with:
-      days: 1
+      minutes: 1
       comment: 'h'
       mention: 'assignees' # Set 'mention' parameter to 'assignees' to override the default value
