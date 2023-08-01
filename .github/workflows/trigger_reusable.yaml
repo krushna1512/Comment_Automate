@@ -10,4 +10,4 @@ jobs:
     with:
       day: 1
       comment: 'h'
-      mention: 'assignee' # Set 'mention' parameter to 'assignees' to override the default value
+      owner_or_assignee: 'assignee' # Set 'mention' parameter to 'assignees' to override the default value
