@@ -1,8 +1,8 @@
-name: Trigger Reusable Workflow
+name: Automate Comment
 
 on:
   schedule:
-   - cron: '*/6 * * * *'
+   - cron: '30 2 * * *'
 
 jobs:
   trigger-workflow:
