@@ -2,7 +2,7 @@ name: Automate Comment
 
 on:
   schedule:
-   - cron: '30 2 * * *'
+   - cron: '*/6 * * * *'
 
 jobs:
   trigger-workflow:
