@@ -1,21 +1,22 @@
-name: Automate Comments
+name: Original 1
 
 on:
   workflow_dispatch:
     inputs:
-      days:
-        description: 'Number of days for considering an issue outdated'
+      minutes:
+        description: 'Number of minutes for considering an issue outdated'
         required: true
-        default: 4
-      comment:
+        type: number
+      comment: 
         description: 'Comment message'
         required: true
-        default: 'Hey'
-      mention:
-        description: 'Mention owner/assignee'
+        type: string
+      owner_or_assignee:
+        description: 'Select whether to mention owner or assignee in the comment'
         required: true
-        default: 'owner'
+        type: string
       
+        
 
 jobs:
   list-issues:
@@ -53,23 +54,26 @@ jobs:
 
               // Calculate the time difference in milliseconds between the last update and the current time
               const timeDifference = currentDate - issueLastUpdated;
-              const daysInMilliseconds = parseInt('{{ github.event.inputs.days }}') * 24 * 60 * 60 * 1000; // Use the input value here
+              const fourDaysInMilliseconds = ${{ inputs.minutes }} * 60 * 1000; // 4 days in milliseconds
 
-              // Check if the issue hasn't been updated in the specified number of days
-              if (timeDifference >= daysInMilliseconds) {
+              // Check if the issue hasn't been updated in the last 4 days
+              if (timeDifference >= fourDaysInMilliseconds) {
                 console.log('Issue ' + issue.number + ' needs an update');
 
-                // Create the comment text with mention
-                const mention = '{{ github.event.inputs.mention }}';
-                let mentionText = '';
-                if (mention === 'owner') {
-                  mentionText = `@${issue.user.login}`;
-                } else if (mention === 'assignee' && issue.assignee) {
-                  mentionText = `@${issue.assignee.login}`;
-                }
+                // Determine whether to mention owner or assignee in the comment
+                const mentionType = '${{ inputs.owner_or_assignee }}';
 
                 // Create a comment text to be posted on the issue
-                const commentText = `Hey ${mentionText}, ${github.event.inputs.comment}`;
+                let commentText;
+                if (mentionType === 'owner') {
+                  commentText = `Hey @${issue.user.login}, ${{ inputs.comment }}`;
+                } else if (mentionType === 'assignee') {
+                  const assigneesList = issue.assignees.map(assignee => `@${assignee.login}`).join(' ');
+                  commentText = `Hey ${assigneesList}, ${{ inputs.comment }}`;
+                } else {
+                  console.log('Invalid mention type selected.');
+                  continue;
+                }
                 console.log('Comment text:', commentText);
 
                 // Post a comment on the issue
