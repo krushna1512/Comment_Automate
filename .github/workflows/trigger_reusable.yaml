@@ -6,7 +6,7 @@ on:
 jobs:
   trigger-workflow:
     name: Trigger Reusable Workflow
-    uses: krushna1512/reusable_workflow/.github/workflows/test1.yaml@main
+    uses: krushna1512/reusable_workflow/.github/workflows/test1.yml@main
     with:
       day: 1
       comment: 'h'
