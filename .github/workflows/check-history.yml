@@ -1,0 +1,23 @@
+
+name: Create Release Build
+
+on:
+  release:
+    types: [released, prereleased]
+
+jobs:
+
+  check-history:
+    name: Check if release is behind
+    uses: krushna1512/reusable_workflow/.github/workflows/check-history.yml@main
+    secrets: inherit
+
+
+  build:
+    name: Build
+    needs: [ check-release, check-history ]
+    if: needs.check-history.outputs.clean && ( needs.check-release.outputs.prefix == 'release' || needs.check-release.outputs.prefix == 'prerelease' )
+    uses: yapsody/actions/.github/workflows/ecr-build-push.yml@master
+    secrets: inherit
+    with:
+      release: "${{ github.event.release.tag_name }}"
