@@ -7,8 +7,15 @@ on:
 
 jobs:
 
+  check-release:
+    name: 1st file
+    uses: krushna1512/reusable_workflow/.github/workflows/check-release.yml@main
+    secrets: inherit
+    
+
   check-history:
     name: Check if release is behind
+    needs: check-release
     uses: krushna1512/reusable_workflow/.github/workflows/check-history.yml@main
     secrets: inherit
 
