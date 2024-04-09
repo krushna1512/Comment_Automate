@@ -20,7 +20,7 @@ jobs:
     secrets: inherit
 
   print:
-    name: eco
+    name: echo
     runs-on: ubuntu-latest
     steps:
     - name: echo
