@@ -1,12 +1,16 @@
 name: Deploy Release
 
-run-name: Deploy release ${{ inputs.release }} to ${{ inputs.deploy-environment }} environment
+run-name: Deploy release ${{ inputs.release }} to ${{ inputs.issue-id }} environment
 
 on:
   workflow_dispatch:
     inputs:
       release:
         description: 'Release Tag to Deploy'
+        required: true
+        type: text
+      issue-id:
+        description: 'Issue ID'
         required: true
         type: text
       
