@@ -1,12 +1,12 @@
-name: Automate Comment Issue id - ${{ inputs.issue-id }}
+name: Automate Comment Issue id ${{ inputs.issue-id }}
 
 on:
   workflow_dispatch:
-   inputs:
-    issue-id:
-          description: 'Issue ID'
-          required: true
-          type: text
+    inputs:
+      issue-id:
+        description: 'Issue ID'
+        required: true
+        type: text
 
 jobs:
   trigger-workflow:
