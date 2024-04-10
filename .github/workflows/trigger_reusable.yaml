@@ -1,6 +1,11 @@
 name: Automate Comment
 on:
-  workflow_dispatch
+  workflow_dispatch:
+   inputs:
+    issue-id:
+          description: 'Issue ID'
+          required: true
+          type: text
 
 jobs:
   trigger-workflow:
