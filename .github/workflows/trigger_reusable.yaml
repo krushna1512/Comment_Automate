@@ -6,7 +6,7 @@ on:
       issue-id:
         description: 'Issue ID'
         required: true
-        type: text
+        type: string
 
 jobs:
   trigger-workflow:
