@@ -6,21 +6,18 @@ on:
       issue-id:
         description: 'Issue ID'
         required: true
-        type: string
+        type: text
 
 jobs:
   trigger-workflow:
     name: Trigger Reusable Workflow
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Reusable Workflow
-        uses: krushna1512/reusable_workflow/.github/workflows/test1.yml@main
-        with:
-          # Number of inactive days of issue.
-          day: 4
+    uses: krushna1512/reusable_workflow/.github/workflows/test1.yml@main
+    with:
+      # Number of inactive days of issue.
+      day: 4
 
-          # Comment which is made on the inactive issue
-          comment: 'This issue is not updated since 4 days, can you please give us some update here?'
+      # Comment which is made on the inactive issue
+      comment: 'This issue is not updated since 4 days, can you please give us some update here?'
 
-          # Select owner or assignee to tag them in a comment
-          owner_or_assignee: 'assignee'
+      # Select owner or assignee to tag them in a comment
+      owner_or_assignee: 'assignee'
