@@ -1,4 +1,5 @@
-name: Automate Comment
+name: Automate Comment Issue id - ${{ inputs.issue-id }}
+
 on:
   workflow_dispatch:
    inputs:
