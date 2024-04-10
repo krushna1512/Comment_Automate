@@ -1,6 +1,6 @@
 name: Deploy Release
 
-run-name: Deploy release ${{ inputs.release }} to ${{ inputs.issue-id }} environment
+run-name: Deploy release ${{ inputs.release }} Issue ID - ${{ inputs.issue-id }} 
 
 on:
   workflow_dispatch:
