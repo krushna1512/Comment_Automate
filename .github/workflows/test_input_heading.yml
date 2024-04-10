@@ -1,0 +1,20 @@
+name: Deploy Release
+
+run-name: Deploy release ${{ inputs.release }} to ${{ inputs.deploy-environment }} environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release Tag to Deploy'
+        required: true
+        type: text
+      
+
+jobs:
+  deploy:
+    name: Deployment Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Statement
+        run: echo "Deploying release ${{ inputs.release }} to ${{ inputs.deploy-environment }} environment"
