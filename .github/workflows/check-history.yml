@@ -22,7 +22,21 @@ jobs:
     secrets: inherit
 
   check-build:
-      name: Check if build is behind
+    name: Check if build is behind
+    needs: [check-release, check-history]
+    if: ${{ needs.check-release.outputs.prefix == 'release' || needs.check-release.outputs.prefix == 'prerelease' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug Outputs
+        run: |
+          echo "prefix: ${{ needs.check-release.outputs.prefix }}"
+      - name: Continue with build if condition is met
+        run: echo "Build is not behind"
+        if: ${{ needs.check-release.outputs.prefix == 'release' || needs.check-release.outputs.prefix == 'prerelease' }}
+
+
+  check-build1:
+      name: Check if build1 is behind
       needs: [ check-release, check-history ]
       if: ${{ needs.check-history.outputs.clean == 'true' && ( needs.check-release.outputs.prefix == 'release' || needs.check-release.outputs.prefix == 'prerelease' ) }}
       uses: krushna1512/reusable_workflow/.github/workflows/check-history.yml@main
