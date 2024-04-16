@@ -21,12 +21,5 @@ jobs:
     uses: krushna1512/reusable_workflow/.github/workflows/check-history.yml@main
     secrets: inherit
 
-  print:
-    name: echo
-    runs-on: ubuntu-latest
-    steps:
-    - name: echo
-      id: history
-      run: |
-        echo "Release Tag Name: ${{ github.event.release.tag_name }}"
+ 
         
