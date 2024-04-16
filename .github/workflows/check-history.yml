@@ -10,6 +10,8 @@ jobs:
   check-release:
     name: 1st file
     uses: krushna1512/reusable_workflow/.github/workflows/check-release.yml@main
+    with:
+     release: ${{ inputs.release }}
     secrets: inherit
     
 
