@@ -37,7 +37,7 @@ jobs:
   check-build1:
       name: Check if build1 is behind
       needs: [ check-release, check-history ]
-      if: ${{ needs.check-history.outputs.clean == 'true' && ( needs.check-release.outputs.prefix == 'release' || needs.check-release.outputs.prefix == 'prerelease' ) }}
+      if: ( needs.check-release.outputs.prefix == 'release' || needs.check-release.outputs.prefix == 'prerelease' ) }}
       uses: krushna1512/reusable_workflow/.github/workflows/check-history.yml@main
       secrets: inherit
 
