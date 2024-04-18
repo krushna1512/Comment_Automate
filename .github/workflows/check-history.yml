@@ -29,7 +29,6 @@ jobs:
         - name: Debug Outputs
           run: |
             echo "Prefix: ${{ needs.check-release.outputs.prefix }}"
-            echo "Clean: ${{ needs.check-history.outputs.clean }}"
         - name: Continue with build if condition is met
           run: echo "Build is not behind"
           if: ${{ needs.check-release.outputs.prefix == 'release' || needs.check-release.outputs.prefix == 'prerelease' }}
