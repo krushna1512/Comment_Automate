@@ -22,7 +22,6 @@ jobs:
     secrets: inherit
 
   check-build:
-    name: Check if build is behind
     needs: [check-release, check-history]
     runs-on: ubuntu-latest
     steps:
