@@ -26,12 +26,13 @@ jobs:
     needs: [check-release, check-history]
     runs-on: ubuntu-latest
     steps:
-      - name: Debug Outputs
-        run: |
-          echo "prefix: ${{ needs.check-release.outputs.prefix }}"
-      - name: Continue with build if condition is met
-        run: echo "Build is not behind"
-        if: ${{ needs.check-release.outputs.prefix == 'release' || needs.check-release.outputs.prefix == 'prerelease' }}
+        - name: Debug Outputs
+          run: |
+            echo "Prefix: ${{ needs.check-release.outputs.prefix }}"
+            echo "Clean: ${{ needs.check-history.outputs.clean }}"
+        - name: Continue with build if condition is met
+          run: echo "Build is not behind"
+          if: ${{ needs.check-release.outputs.prefix == 'release' || needs.check-release.outputs.prefix == 'prerelease' }}
 
 
   check-build1:
