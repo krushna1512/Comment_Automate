@@ -31,4 +31,6 @@ jobs:
        run: |
           echo "Prefix: ${{ needs.check-release.outputs.prefix }}"
           echo "Clean: ${{ needs.check-history.outputs.clean }}"
+          needs.check-history.outputs.clean
+          needs.check-release.outputs.prefix
 
