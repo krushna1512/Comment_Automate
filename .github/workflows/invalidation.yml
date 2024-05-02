@@ -1,0 +1,25 @@
+name: CloudFront Invalidation
+
+on:
+  workflow_dispatch:
+
+jobs:
+  invalidate_cloudfront:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: AWS CLI Installation
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1 # Replace with your AWS region
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id YOUR_DISTRIBUTION_ID \
+            --paths "/*" "/?*"
