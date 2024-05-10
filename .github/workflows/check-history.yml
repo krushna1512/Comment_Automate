@@ -6,8 +6,21 @@ on:
     types: [released, prereleased]
 
 jobs:
+  check-release-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Release Name for Spaces
+        id: check-release
+        run: |
+          if [[ "${{ github.event.release.name }}" == *" "* ]]; then
+            echo "Release name contains a space. Exiting workflow."
+            exit 1
+          else
+            echo "Release name is valid. Proceeding with workflow."
+          fi
 
   check-release:
+    needs: check-release-name
     name: 1st file
     uses: krushna1512/reusable_workflow/.github/workflows/check-release.yml@main
     with:
