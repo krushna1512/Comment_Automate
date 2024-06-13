@@ -8,9 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print full repository name
-        run: echo "Full repository name is: $GITHUB_REPOSITORY"
+        run: echo "Full repository name is: ${{ github.repository }}"
 
       - name: Extract and print repository name
         run: |
-          REPO_NAME=${GITHUB_REPOSITORY##*/}
-          echo "Repository name is: $REPO_NAME"
+          REPO_NAME=${{ github.repository }}
+          REPO_NAME_ONLY=$(echo $REPO_NAME | cut -d'/' -f2)
+          echo "Repository name is: $REPO_NAME_ONLY"
