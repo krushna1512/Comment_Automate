@@ -11,4 +11,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Print full repository name
-        run: echo "Full repository name is: ${{GITHUB_REPOSITORY}}"
+        run: echo "Full repository name is: $GITHUB_REPOSITORY"
+
+      - name: Extract and print repository name
+        run: |
+          REPO_NAME=${GITHUB_REPOSITORY##*/}
+          echo "Repository name is: $REPO_NAME"
