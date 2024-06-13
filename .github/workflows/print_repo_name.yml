@@ -1,0 +1,14 @@
+name: Print Repo Name
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  print-repo-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Print full repository name
+        run: echo "Full repository name is: $GITHUB_REPOSITORY"
