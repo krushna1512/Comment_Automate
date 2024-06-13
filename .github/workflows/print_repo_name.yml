@@ -7,12 +7,10 @@ jobs:
   print-repo-name:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Print full repository name
+        run: echo "Full repository name is: $GITHUB_REPOSITORY"
 
       - name: Extract and print repository name
         run: |
-          REPO_NAME=${{ github.repository }}
-          REPO_NAME_ONLY=${{ github.repository }} | cut -d'/' -f2
-          cho "Repository name is: $REPO_NAME"
-          echo "Repository name is: $REPO_NAME_ONLY"
+          REPO_NAME=${GITHUB_REPOSITORY##*/}
+          echo "Repository name is: $REPO_NAME"
