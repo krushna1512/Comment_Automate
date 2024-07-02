@@ -11,8 +11,8 @@ on:
         options:
           - stg
           - prod
-      run-npm-ci:
-        description: 'Run npm ci'
+      run-npm-i:
+        description: 'Run npm i'
         required: true
         default: 'false'
         type: boolean
@@ -34,11 +34,11 @@ jobs:
         cat <<END >deploy.sh
         #!/bin/bash
         echo "Deployment environment: $DEPLOYMENT_ENV"
-        if [ "${{ github.event.inputs['run-npm-ci'] }}" == "true" ]; then
-          echo "Checkbox is checked. Running run-npm-ci command:"
+        if [ "${{ github.event.inputs['run-npm-i'] }}" == "true" ]; then
+          echo "Checkbox is checked. Running run-npm-i command:"
           pwd
         else
-          echo "Checkbox is not checked. Skipping run-npm-ci command."
+          echo "Checkbox is not checked. Skipping run-npm-i command."
         fi
         END
       shell: bash
