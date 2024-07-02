@@ -11,8 +11,8 @@ on:
         options:
           - stg
           - prod
-      run-pwd:
-        description: 'Run pwd'
+      run-npm-ci:
+        description: 'Run npm ci'
         required: true
         default: 'false'
         type: boolean
@@ -33,8 +33,12 @@ jobs:
       run: |
         cat <<END >deploy.sh
         #!/bin/bash
-        if [ "${{ github.event.inputs['run-pwd'] }}" == "true" ]; then
+        echo "Deployment environment: $DEPLOYMENT_ENV"
+        if [ "${{ github.event.inputs['run-npm-ci'] }}" == "true" ]; then
+          echo "Checkbox is checked. Running run-npm-ci command:"
           pwd
+        else
+          echo "Checkbox is not checked. Skipping run-npm-ci command."
         fi
         END
       shell: bash
