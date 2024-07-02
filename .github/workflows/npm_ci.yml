@@ -1,4 +1,4 @@
-name: run NPM CI  or not
+name: Deploy
 
 on:
   workflow_dispatch:
@@ -29,6 +29,18 @@ jobs:
       id: set-env
       run: echo "DEPLOYMENT_ENV=${{ github.event.inputs['deployment-env'] }}" >> $GITHUB_ENV
 
-    - name: Run pwd if checked
-      if: ${{ github.event.inputs['run-pwd'] == 'true' }}
-      run: pwd
+    - name: Create deploy script
+      run: |
+        cat <<END >deploy.sh
+        #!/bin/bash
+        if [ "${{ github.event.inputs['run-pwd'] }}" == "true" ]; then
+          pwd
+        fi
+        END
+      shell: bash
+
+    - name: Make deploy script executable
+      run: chmod +x deploy.sh
+
+    - name: Run deploy script
+      run: ./deploy.sh
