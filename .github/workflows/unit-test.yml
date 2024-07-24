@@ -1,0 +1,61 @@
+name: Unit Test
+
+on:
+  workflow_call:
+    inputs:
+      ENVIRONMENT:
+        required: false
+        type: string
+      MYSQL_HOST:
+        required: false
+        type: string
+      MYSQL_USERNAME:
+        required: false
+        type: string
+      MYSQL_PASSWORD:
+        required: false
+        type: string
+      AWS_ACCESS_KEY_ID:
+        required: false
+        type: string
+      AWS_SECRET_ACCESS_KEY:
+        required: false
+        type: string
+      AWS_SQS_ENDPOINT:
+        required: false
+        type: string      
+      
+
+jobs:
+  unit-test:
+    name: Unit Test
+    runs-on: [self-hosted, office]
+    env:
+      INPUT_TOKEN: ${{ secrets.NPM_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4.1.6
+
+      - uses: actions/setup-node@v4.0.2
+        with:
+          node-version: "16"
+
+      - name: Installing Dependencies
+        run: npm ci
+
+      - name: Unit Test
+        id: test_unit
+        env:
+          ENVIRONMENT: 'yap-local'
+          MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+          MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SQS_ENDPOINT: ${{ secrets.AWS_SQS_ENDPOINT }}
+        run: npm run test
+
+      - uses: actions/upload-artifact@v4.3.4
+        with:
+          name: code-coverage-info
+          path: reports/lcov.info
