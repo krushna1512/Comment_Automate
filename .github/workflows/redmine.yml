@@ -34,7 +34,7 @@ jobs:
         fi
 
   redmine_notification:
-    needs: deployment
+    if: always()
     runs-on: ubuntu-latest
 
     steps:
