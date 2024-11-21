@@ -35,6 +35,7 @@ jobs:
         else
           echo "::set-output name=status::Deployment failed during execution."
         fi
+      if: always() 
 
   redmine_notification:
     needs: deployment
