@@ -1,52 +1,54 @@
-name: Deployment Pipeline
+name: Deployment Workflow with Redmine Notification
 
 on:
   workflow_dispatch:
     inputs:
-      redmine_ticket_id:
-        description: 'Redmine Ticket ID to update with pipeline status and logs'
+      redmine_issue_id:
+        description: "Redmine Issue ID"
         required: true
-        type: string
+      redmine_api_key:
+        description: "Redmine API Key"
+        required: true
 
 jobs:
-  deploy:
+  deployment:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Dummy Deployment Step
+      id: deploy
+      run: |
+        echo "Starting deployment..."
+        # Simulating a deployment step
+        if [ "$RANDOM" -gt 20000 ]; then
+          echo "Deployment failed!"
+          exit 1
+        else
+          echo "Deployment succeeded!"
+        fi
 
-      # Set up environment
-      - name: Set up environment
-        run: |
-          echo "Setting up environment variables"
-          export REDMINE_TICKET_ID=${{ github.event.inputs.redmine_ticket_id }}
+    - name: Set Deployment Status
+      id: deployment_status
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "status=Deployment completed successfully." >> $GITHUB_ENV
+        else
+          echo "status=Deployment failed during execution." >> $GITHUB_ENV
+        fi
 
-      # Run deployment steps (replace with your actual deployment commands)
-      - name: Run deployment
-        id: deployment_step
-        run: |
-          echo "Starting deployment process..."
-          # Simulate deployment
-          echo "Deployment completed successfully!"
+  redmine_notification:
+    needs: deployment
+    runs-on: ubuntu-latest
 
-      # Capture logs and send to Redmine
-      - name: Notify Redmine
-        if: always() # Ensures this runs regardless of success/failure
-        env:
-          REDMINE_API_KEY: 1575c3fb0e3c75e8261b9903ebbba14362bcc09f
-          REDMINE_BASE_URL: https://redmine.yapsody.net
-        run: |
-          PIPELINE_STATUS=${{ job.status }}
-          DEPLOY_LOGS=$(cat $GITHUB_WORKSPACE/deployment.log || echo "No logs found.")
-          
-          echo "Updating Redmine ticket #${REDMINE_TICKET_ID}..."
-          
-          COMMENT_BODY="Pipeline Status: ${PIPELINE_STATUS}%0ADeployment Logs:%0A\`\`\`${DEPLOY_LOGS}\`\`\`"
-
-          curl -X POST "$REDMINE_BASE_URL/issues/${REDMINE_TICKET_ID}/notes" \
-          -H "Content-Type: application/json" \
-          -H "X-Redmine-API-Key: $REDMINE_API_KEY" \
-          -d "{\"issue\": {\"notes\": \"${COMMENT_BODY}\"}}"
-
+    steps:
+    - name: Send Redmine Comment
+      env:
+        REDMINE_ISSUE_ID: ${{ github.event.inputs.redmine_issue_id }}
+        REDMINE_API_KEY: 1575c3fb0e3c75e8261b9903ebbba14362bcc09f
+        DEPLOYMENT_STATUS: ${{ env.status }}
+      run: |
+        echo "Sending deployment status to Redmine..."
+        curl -X PUT "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}.json" \
+        -H "Content-Type: application/json" \
+        -H "X-Redmine-API-Key: ${REDMINE_API_KEY}" \
+        -d "{\"issue\": {\"notes\": \"${DEPLOYMENT_STATUS}\"}}"
