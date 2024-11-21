@@ -28,6 +28,7 @@ jobs:
 
     - name: Set Deployment Status
       id: set_status
+      continue-on-error: true
       run: |
         if [ "${{ job.status }}" == "success" ]; then
           echo "::set-output name=status::Deployment completed successfully."
