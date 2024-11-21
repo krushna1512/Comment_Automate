@@ -49,4 +49,4 @@ jobs:
         curl -X PUT "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}.json" \
         -H "Content-Type: application/json" \
         -H "X-Redmine-API-Key: ${REDMINE_API_KEY}" \
-        -d "{\"issue\": {\"notes\": \"${DEPLOYMENT_STATUS}\"}}"
+        -d "{\"issue\": {\"notes\": \"Tesing from local workflow\"}}"
