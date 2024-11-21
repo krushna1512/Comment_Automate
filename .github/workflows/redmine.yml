@@ -10,6 +10,8 @@ on:
 jobs:
   deployment:
     runs-on: ubuntu-latest
+    outputs:
+      deployment_status: ${{ steps.set_status.outputs.status }}  # Job output
 
     steps:
     - name: Dummy Deployment Step
@@ -25,34 +27,32 @@ jobs:
         fi
 
     - name: Set Deployment Status
-      id: deployment_status
+      id: set_status
       run: |
         if [ "${{ job.status }}" == "success" ]; then
-          echo "status=Deployment completed successfully." >> $GITHUB_ENV
           echo "::set-output name=status::Deployment completed successfully."
         else
-          echo "status=Deployment failed during execution." >> $GITHUB_ENV
           echo "::set-output name=status::Deployment failed during execution."
         fi
 
   redmine_notification:
     needs: deployment
     runs-on: ubuntu-latest
-    if: always() # Always runs after deployment
+    if: always()  # Always runs after deployment
 
     steps:
     - name: Check Deployment Status
       run: |
-        echo "Deployment status from previous job: ${{ needs.deployment.outputs.status }}" # Debugging step
+        echo "Deployment status from previous job: ${{ needs.deployment.outputs.deployment_status }}"  # Debugging step
 
     - name: Send Redmine Comment
       env:
         REDMINE_ISSUE_ID: ${{ github.event.inputs.redmine_issue_id }}
-        REDMINE_API_KEY: ${{ secrets.REDMINE_API_KEY }} # Access API key from secrets
-        DEPLOYMENT_STATUS: ${{ needs.deployment.outputs.status }} # Access status from the output
+        REDMINE_API_KEY: ${{ secrets.REDMINE_API_KEY }}  # Access API key from secrets
+        DEPLOYMENT_STATUS: ${{ needs.deployment.outputs.deployment_status }}  # Use output as input
       run: |
         echo "Sending deployment status to Redmine..."
-        echo "DEPLOYMENT_STATUS: ${DEPLOYMENT_STATUS}" # Debugging step
+        echo "DEPLOYMENT_STATUS: ${DEPLOYMENT_STATUS}"  # Debugging step
         curl -X PUT "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}.json" \
         -H "Content-Type: application/json" \
         -H "X-Redmine-API-Key: ${REDMINE_API_KEY}" \
