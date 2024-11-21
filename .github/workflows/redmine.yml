@@ -34,8 +34,9 @@ jobs:
         fi
 
   redmine_notification:
-    if: always()
+    needs: deployment
     runs-on: ubuntu-latest
+    if: always()
 
     steps:
     - name: Send Redmine Comment
