@@ -6,10 +6,7 @@ on:
       redmine_issue_id:
         description: "Redmine Issue ID"
         required: true
-      redmine_api_key:
-        description: "Redmine API Key"
-        required: true
-
+    
 jobs:
   deployment:
     runs-on: ubuntu-latest
