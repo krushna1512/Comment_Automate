@@ -6,7 +6,10 @@ on:
       redmine_issue_id:
         description: "Redmine Issue ID"
         required: true
-    
+      redmine_api_key:
+        description: "Redmine API Key"
+        required: true
+
 jobs:
   deployment:
     runs-on: ubuntu-latest
@@ -36,17 +39,17 @@ jobs:
   redmine_notification:
     needs: deployment
     runs-on: ubuntu-latest
-    if: always()
+    if: always() # Always runs after deployment
 
     steps:
     - name: Send Redmine Comment
       env:
         REDMINE_ISSUE_ID: ${{ github.event.inputs.redmine_issue_id }}
         REDMINE_API_KEY: 1575c3fb0e3c75e8261b9903ebbba14362bcc09f
-        DEPLOYMENT_STATUS: ${{ env.status }}
+        DEPLOYMENT_STATUS: ${{ env.status }} # Access status from the environment variable
       run: |
         echo "Sending deployment status to Redmine..."
         curl -X PUT "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}.json" \
         -H "Content-Type: application/json" \
         -H "X-Redmine-API-Key: ${REDMINE_API_KEY}" \
-        -d "{\"issue\": {\"notes\": \"Tesing from local workflow\"}}"
+        -d "{\"issue\": {\"notes\": \"${DEPLOYMENT_STATUS}\"}}"
