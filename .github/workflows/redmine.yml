@@ -29,8 +29,10 @@ jobs:
       run: |
         if [ "${{ job.status }}" == "success" ]; then
           echo "status=Deployment completed successfully." >> $GITHUB_ENV
+          echo "::set-output name=status::Deployment completed successfully."
         else
           echo "status=Deployment failed during execution." >> $GITHUB_ENV
+          echo "::set-output name=status::Deployment failed during execution."
         fi
 
   redmine_notification:
@@ -42,11 +44,11 @@ jobs:
     - name: Send Redmine Comment
       env:
         REDMINE_ISSUE_ID: ${{ github.event.inputs.redmine_issue_id }}
-        REDMINE_API_KEY: 1575c3fb0e3c75e8261b9903ebbba14362bcc09f
-        DEPLOYMENT_STATUS: ${{ env.status }} # Access status from the environment variable
+        REDMINE_API_KEY: ${{ secrets.REDMINE_API_KEY }} # Access API key from secrets
+        DEPLOYMENT_STATUS: ${{ needs.deployment.outputs.status }} # Access status from the output
       run: |
         echo "Sending deployment status to Redmine..."
-        curl -X PUT "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}.json" \
+        curl -X POST "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}/notes.json" \
         -H "Content-Type: application/json" \
         -H "X-Redmine-API-Key: ${REDMINE_API_KEY}" \
-        -d "{\"issue\": {\"notes\": \"${DEPLOYMENT_STATUS}\"}}"
+        -d "{\"note\": \"${DEPLOYMENT_STATUS}\"}"
