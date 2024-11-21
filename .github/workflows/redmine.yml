@@ -43,7 +43,7 @@ jobs:
     steps:
     - name: Check Deployment Status
       run: |
-        echo "Deployment status: ${{ needs.deployment.outputs.status }}" # Debugging step
+        echo "Deployment status from previous job: ${{ needs.deployment.outputs.status }}" # Debugging step
 
     - name: Send Redmine Comment
       env:
