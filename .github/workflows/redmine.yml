@@ -11,7 +11,7 @@ jobs:
   deployment:
     runs-on: ubuntu-latest
     outputs:
-      deployment_status: ${{ steps.set_status.outputs.status }}  # Job output capturing deployment status
+      deployment_status: ${{ steps.set_status.outputs.status }}  
 
     steps:
     - name: Dummy Deployment Step
@@ -38,8 +38,7 @@ jobs:
   redmine_notification:
     needs: deployment
     runs-on: ubuntu-latest
-    if: always()  # Always runs after deployment
-
+    if: always()  
     steps:
     - name: Check Deployment Status
       run: |
@@ -49,8 +48,8 @@ jobs:
     - name: Send Redmine Comment
       env:
         REDMINE_ISSUE_ID: ${{ github.event.inputs.redmine_issue_id }}
-        REDMINE_API_KEY: ${{ secrets.REDMINE_API_KEY }}  # Access API key from secrets
-        DEPLOYMENT_STATUS: ${{ needs.deployment.outputs.deployment_status }}  # Use the deployment status output
+        REDMINE_API_KEY: ${{ secrets.REDMINE_API_KEY }} 
+        DEPLOYMENT_STATUS: ${{ needs.deployment.outputs.deployment_status }}  
       run: |
         echo "Sending deployment status to Redmine..."
         echo "DEPLOYMENT_STATUS: ${DEPLOYMENT_STATUS}"  # Debugging step
