@@ -53,7 +53,7 @@ jobs:
       run: |
         echo "Sending deployment status to Redmine..."
         echo "DEPLOYMENT_STATUS: ${DEPLOYMENT_STATUS}" # Debugging step
-        curl -X POST "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}/notes.json" \
+        curl -X PUT "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}.json" \
         -H "Content-Type: application/json" \
         -H "X-Redmine-API-Key: ${REDMINE_API_KEY}" \
-        -d "{\"note\": \"${DEPLOYMENT_STATUS}\"}"
+        -d "{\"issue\": {\"notes\": \"${DEPLOYMENT_STATUS}\"}}"
