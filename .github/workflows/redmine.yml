@@ -41,6 +41,10 @@ jobs:
     if: always() # Always runs after deployment
 
     steps:
+    - name: Check Deployment Status
+      run: |
+        echo "Deployment status: ${{ needs.deployment.outputs.status }}" # Debugging step
+
     - name: Send Redmine Comment
       env:
         REDMINE_ISSUE_ID: ${{ github.event.inputs.redmine_issue_id }}
@@ -48,6 +52,7 @@ jobs:
         DEPLOYMENT_STATUS: ${{ needs.deployment.outputs.status }} # Access status from the output
       run: |
         echo "Sending deployment status to Redmine..."
+        echo "DEPLOYMENT_STATUS: ${DEPLOYMENT_STATUS}" # Debugging step
         curl -X POST "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}/notes.json" \
         -H "Content-Type: application/json" \
         -H "X-Redmine-API-Key: ${REDMINE_API_KEY}" \
