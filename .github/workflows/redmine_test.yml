@@ -1,0 +1,80 @@
+name: Deploy Release Test
+
+run-name: Deploy release ${{ inputs.release }} to ${{ inputs.deploy-environment }} environment Issue Id - ${{ inputs.issue-id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release Tag to Deploy'
+        required: true
+        type: string
+      deploy-environment:
+        description: 'Deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - 'secondstaging'
+          - 'staging'
+          - 'production'
+      issue-id:
+        description: 'Issue ID'
+        required: true
+        type: string
+
+jobs:
+
+  
+  aws-deployment:
+    name: AWS Deployment Operation
+    runs-on: ubuntu-latest
+    outputs:
+      deployment_status: ${{ steps.set_status.outputs.status }} 
+    env:
+      INPUT_TOKEN: ""
+    steps:
+      - name: Set Deployment Status
+        id: set_status
+        continue-on-error: true
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "::set-output name=status::Deployment completed successfully."
+          else
+            echo "::set-output name=status::Deployment failed during execution."
+          fi
+        if: always()
+
+  redmine_notification:
+      needs: aws-deployment
+      runs-on: ubuntu-latest
+      if: always()  
+      steps:
+      - name: Dummy Deployment Step
+        id: deploy
+        run: |
+          echo "Starting deployment..."
+          # Simulating a deployment step
+          if [ "$RANDOM" -gt 20000 ]; then
+            echo "Deployment failed!"
+            exit 1
+          else
+            echo "Deployment succeeded!"
+          fi
+      - name: Check Deployment Status
+        run: |
+          # Debugging step to confirm the deployment status
+          echo "Deployment status from previous job: ${{ needs.deployment.outputs.deployment_status }}"
+  
+      - name: Send Redmine Comment
+        env:
+          REDMINE_ISSUE_ID: ${{ github.event.inputs.issue-id }}
+          REDMINE_API_KEY: ${{ secrets.REDMINE_API_KEY }} 
+          DEPLOYMENT_STATUS: ${{ needs.aws-deployment.outputs.deployment_status }}  
+        run: |
+          echo "Sending deployment status to Redmine..."
+          echo "DEPLOYMENT_STATUS: ${DEPLOYMENT_STATUS}"  # Debugging step
+          curl -X PUT "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}.json" \
+          -H "Content-Type: application/json" \
+          -H "X-Redmine-API-Key: ${REDMINE_API_KEY}" \
+          -d "{\"issue\": {\"notes\": \"${DEPLOYMENT_STATUS}\"}}"
