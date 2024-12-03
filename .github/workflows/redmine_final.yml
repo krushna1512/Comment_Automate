@@ -1,0 +1,75 @@
+name: Deployment Workflow with Redmine Notification
+
+on:
+  workflow_dispatch:
+    inputs:
+      redmine_issue_id:
+        description: "Redmine Issue ID"
+        required: true
+      deploy_environment:
+        description: "Deployment Environment (e.g., staging, production)"
+        required: true
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    outputs:
+      deployment_status: ${{ steps.set_status.outputs.status }}  
+
+    steps:
+    - name: Dummy Deployment Step
+      id: deploy
+      run: |
+        echo "Starting deployment..."
+        # Simulating a deployment step
+        if [ "$RANDOM" -gt 20000 ]; then
+          echo "Deployment failed!"
+          exit 1
+        else
+          echo "Deployment succeeded!"
+        fi
+
+    - name: Set Deployment Status
+      id: set_status
+      continue-on-error: true
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "::set-output name=status::Deployment completed successfully."
+        else
+          echo "::set-output name=status::Deployment failed during execution."
+        fi
+      if: always() 
+
+  redmine_notification:
+    needs: deployment
+    runs-on: ubuntu-latest
+    if: always()  
+    steps:
+    - name: Get Commit ID
+      id: git_info
+      run: echo "::set-output name=commit_id::$(git rev-parse HEAD)"
+    
+    - name: Check Deployment Status
+      run: |
+        # Debugging step to confirm the deployment status
+        echo "Deployment status from previous job: ${{ needs.deployment.outputs.deployment_status }}"
+
+    - name: Send Redmine Comment
+      env:
+        REDMINE_ISSUE_ID: ${{ github.event.inputs.redmine_issue_id }}
+        REDMINE_API_KEY: ${{ secrets.REDMINE_API_KEY }} 
+        DEPLOYMENT_STATUS: ${{ needs.deployment.outputs.deployment_status }}  
+        DEPLOY_ENVIRONMENT: ${{ github.event.inputs.deploy_environment }}
+        COMMIT_ID: ${{ steps.git_info.outputs.commit_id }}
+        WORKFLOW_LOGS_URL: ${{ github.run_url }}
+      run: |
+        echo "Sending deployment status to Redmine..."
+        echo "DEPLOYMENT_STATUS: ${DEPLOYMENT_STATUS}"  # Debugging step
+        curl -X PUT "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}.json" \
+        -H "Content-Type: application/json" \
+        -H "X-Redmine-API-Key: ${REDMINE_API_KEY}" \
+        -d "{
+          \"issue\": {
+            \"notes\": \"Deployment Status: ${DEPLOYMENT_STATUS}\nEnvironment: ${DEPLOY_ENVIRONMENT}\nCommit ID: ${COMMIT_ID}\nWorkflow Logs: ${WORKFLOW_LOGS_URL}\"
+          }
+        }"
