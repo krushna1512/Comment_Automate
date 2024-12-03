@@ -45,10 +45,6 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
-    - name: Get Commit ID
-      id: git_info
-      run: echo "::set-output name=commit_id::$(git rev-parse HEAD)"
-
     - name: Check Deployment Status
       run: |
         echo "Deployment status from previous job: ${{ needs.deployment.outputs.deployment_status }}"
@@ -59,8 +55,8 @@ jobs:
         REDMINE_API_KEY: ${{ secrets.REDMINE_API_KEY }}
         DEPLOYMENT_STATUS: ${{ needs.deployment.outputs.deployment_status }}
         DEPLOY_ENVIRONMENT: ${{ github.event.inputs.deploy_environment }}
+        COMMIT_ID: ${{ github.sha }}
       run: |
-        COMMIT_ID=${{ steps.git_info.outputs.commit_id }}
         WORKFLOW_LOGS_URL=${{ github.run_url }}
         
         echo "Sending deployment status to Redmine..."
