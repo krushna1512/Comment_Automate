@@ -56,9 +56,8 @@ jobs:
         DEPLOYMENT_STATUS: ${{ needs.deployment.outputs.deployment_status }}
         DEPLOY_ENVIRONMENT: ${{ github.event.inputs.deploy_environment }}
         COMMIT_ID: ${{ github.sha }}
+        WORKFLOW_LOGS_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
       run: |
-        WORKFLOW_LOGS_URL=${{ github.run_url }}
-        
         echo "Sending deployment status to Redmine..."
         echo "DEPLOYMENT_STATUS: ${DEPLOYMENT_STATUS}"  # Debugging step
         echo "COMMIT_ID: ${COMMIT_ID}"
