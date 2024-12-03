@@ -1,4 +1,4 @@
-name: Deployment Workflow with Redmine Notification
+name: Redmine final
 
 on:
   workflow_dispatch:
