@@ -43,28 +43,31 @@ jobs:
   redmine_notification:
     needs: deployment
     runs-on: ubuntu-latest
-    if: always()  
+    if: always()
     steps:
     - name: Get Commit ID
       id: git_info
       run: echo "::set-output name=commit_id::$(git rev-parse HEAD)"
-    
+
     - name: Check Deployment Status
       run: |
-        # Debugging step to confirm the deployment status
         echo "Deployment status from previous job: ${{ needs.deployment.outputs.deployment_status }}"
 
     - name: Send Redmine Comment
       env:
         REDMINE_ISSUE_ID: ${{ github.event.inputs.redmine_issue_id }}
-        REDMINE_API_KEY: ${{ secrets.REDMINE_API_KEY }} 
-        DEPLOYMENT_STATUS: ${{ needs.deployment.outputs.deployment_status }}  
+        REDMINE_API_KEY: ${{ secrets.REDMINE_API_KEY }}
+        DEPLOYMENT_STATUS: ${{ needs.deployment.outputs.deployment_status }}
         DEPLOY_ENVIRONMENT: ${{ github.event.inputs.deploy_environment }}
-        COMMIT_ID: ${{ steps.git_info.outputs.commit_id }}
-        WORKFLOW_LOGS_URL: ${{ github.run_url }}
       run: |
+        COMMIT_ID=${{ steps.git_info.outputs.commit_id }}
+        WORKFLOW_LOGS_URL=${{ github.run_url }}
+        
         echo "Sending deployment status to Redmine..."
         echo "DEPLOYMENT_STATUS: ${DEPLOYMENT_STATUS}"  # Debugging step
+        echo "COMMIT_ID: ${COMMIT_ID}"
+        echo "WORKFLOW_LOGS_URL: ${WORKFLOW_LOGS_URL}"
+
         curl -X PUT "https://redmine.yapsody.net/issues/${REDMINE_ISSUE_ID}.json" \
         -H "Content-Type: application/json" \
         -H "X-Redmine-API-Key: ${REDMINE_API_KEY}" \
