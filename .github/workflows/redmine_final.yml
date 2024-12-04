@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       deployment_status: ${{ steps.set_status.outputs.status }}  
+      deployment_note: ${{ steps.generate_note.outputs.note }}
 
     steps:
     - name: Dummy Deployment Step
@@ -31,14 +32,22 @@ jobs:
 
     - name: Set Deployment Status
       id: set_status
-      continue-on-error: true
       run: |
         if [ "${{ job.status }}" == "success" ]; then
           echo "::set-output name=status::Deployment completed successfully."
         else
           echo "::set-output name=status::Deployment failed during execution."
         fi
-      if: always() 
+      if: always()
+
+    - name: Generate Redmine Note
+      id: generate_note
+      run: |
+        DEPLOYMENT_STATUS="${{ steps.set_status.outputs.status }}"
+        COMMIT_ID="${{ github.sha }}"
+        WORKFLOW_LOGS_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        DEPLOY_ENVIRONMENT="${{ github.event.inputs.deploy_environment }}"
+        echo "::set-output name=note::Deployment Status: ${DEPLOYMENT_STATUS}\nEnvironment: ${DEPLOY_ENVIRONMENT}\nCommit ID: ${COMMIT_ID}\nWorkflow Logs: ${WORKFLOW_LOGS_URL}"
 
   redmine_notification:
     needs: deployment
@@ -48,5 +57,4 @@ jobs:
     with: 
       deployment_status: ${{ needs.deployment.outputs.deployment_status }}
       redmine_issue_id: ${{ inputs.redmine_issue_id }}
-    
-    
+      deployment_note: ${{ needs.deployment.outputs.deployment_note }}
