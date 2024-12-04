@@ -54,6 +54,5 @@ jobs:
     secrets: inherit
     uses: krushna1512/reusable_workflow/.github/workflows/redmine.yml@main
     with: 
-      deployment_status: ${{ needs.deployment.outputs.deployment_status }}
       redmine_issue_id: ${{ inputs.redmine_issue_id }}
       deployment_note: ${{ needs.deployment.outputs.deployment_note }}
