@@ -45,5 +45,7 @@ jobs:
     if: always()
     secrets: inherit
     uses: krushna1512/reusable_workflow/.github/workflows/redmine.yml@main
+    with: 
+      deployment_status: ${{ needs.deployment.outputs.deployment_status }}
     
     
