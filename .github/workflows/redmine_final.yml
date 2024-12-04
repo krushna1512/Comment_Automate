@@ -13,8 +13,7 @@ on:
 jobs:
   deployment:
     runs-on: ubuntu-latest
-    outputs:
-      deployment_status: ${{ steps.set_status.outputs.status }}  
+    outputs: 
       deployment_note: ${{ steps.generate_note.outputs.note }}
 
     steps:
