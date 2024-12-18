@@ -42,19 +42,10 @@ jobs:
     - name: Generate Redmine Note
       id: generate_note
       run: |
-        # Extract and log variables for debugging
         DEPLOYMENT_STATUS="${{ steps.set_status.outputs.status }}"
         COMMIT_ID="${{ github.sha }}"
         WORKFLOW_LOGS_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         DEPLOY_ENVIRONMENT="${{ github.event.inputs.deploy_environment }}"
-        
-        # Debugging logs to ensure variables are populated
-        echo "DEPLOYMENT_STATUS: $DEPLOYMENT_STATUS"
-        echo "COMMIT_ID: $COMMIT_ID"
-        echo "WORKFLOW_LOGS_URL: $WORKFLOW_LOGS_URL"
-        echo "DEPLOY_ENVIRONMENT: $DEPLOY_ENVIRONMENT"
-        
-        # Escape newlines for multi-line output
         NOTE="Deployment Status: $DEPLOYMENT_STATUS\nEnvironment: $DEPLOY_ENVIRONMENT\nCommit ID: $COMMIT_ID\nWorkflow Logs: $WORKFLOW_LOGS_URL"
         echo "note=${NOTE}" | sed ':a;N;$!ba;s/\n/\\n/g' >> $GITHUB_OUTPUT
       if: always()
