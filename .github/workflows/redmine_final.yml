@@ -9,6 +9,10 @@ on:
       deploy_environment:
         description: "Deployment Environment (e.g., staging, production)"
         required: true
+      release:
+        description: 'Release Tag to Deploy'
+        required: true
+        type: string
 
 jobs:
   deployment:
@@ -46,7 +50,7 @@ jobs:
         COMMIT_ID="${{ github.sha }}"
         WORKFLOW_LOGS_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         DEPLOY_ENVIRONMENT="${{ github.event.inputs.deploy_environment }}"
-        TAG_NAME="${{ github.ref_name }}"
+        TAG_NAME="${{ inputs.release }}"
         GITHUB_TAG_URL="https://github.com/${{ github.repository }}/releases/tag/$TAG_NAME"
         NOTE="Deployment Status: $DEPLOYMENT_STATUS\nEnvironment: $DEPLOY_ENVIRONMENT\nCommit ID: $COMMIT_ID\nWorkflow Logs: $WORKFLOW_LOGS_URL\nGitHub Tag: $GITHUB_TAG_URL"
         echo "note=${NOTE//$'\n'/\\n}" >> $GITHUB_OUTPUT
