@@ -46,7 +46,9 @@ jobs:
         COMMIT_ID="${{ github.sha }}"
         WORKFLOW_LOGS_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         DEPLOY_ENVIRONMENT="${{ github.event.inputs.deploy_environment }}"
-        NOTE="Deployment Status: $DEPLOYMENT_STATUS\nEnvironment: $DEPLOY_ENVIRONMENT\nCommit ID: $COMMIT_ID\nWorkflow Logs: $WORKFLOW_LOGS_URL"
+        TAG_NAME="${{ github.ref_name }}"
+        GITHUB_TAG_URL="https://github.com/${{ github.repository }}/releases/tag/$TAG_NAME"
+        NOTE="Deployment Status: $DEPLOYMENT_STATUS\nEnvironment: $DEPLOY_ENVIRONMENT\nCommit ID: $COMMIT_ID\nWorkflow Logs: $WORKFLOW_LOGS_URL\nGitHub Tag: $GITHUB_TAG_URL"
         echo "note=${NOTE//$'\n'/\\n}" >> $GITHUB_OUTPUT
       if: always()
 
