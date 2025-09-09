@@ -53,7 +53,7 @@ jobs:
         TAG_NAME="${{ inputs.release }}"
         GITHUB_TAG_URL="https://github.com/${{ github.repository }}/releases/tag/$TAG_NAME"
         TRIGGERED_BY=${{ github.actor }}
-        NOTE="Deployment Status: $DEPLOYMENT_STATUS\nEnvironment: $DEPLOY_ENVIRONMENT\nCommit ID: $COMMIT_ID\nWorkflow Logs: $WORKFLOW_LOGS_URL\nGitHub Tag: $GITHUB_TAG_URL\nTRIGGERED_BY: $TRIGGERED_BY"
+        NOTE="Deployment Status: $DEPLOYMENT_STATUS\nEnvironment: $DEPLOY_ENVIRONMENT\nCommit ID: $COMMIT_ID\nWorkflow Logs: $WORKFLOW_LOGS_URL\nGitHub Tag: $GITHUB_TAG_URL\nTriggered By: $TRIGGERED_BY"
         echo "note=${NOTE//$'\n'/\\n}" >> $GITHUB_OUTPUT
       if: always()
 
